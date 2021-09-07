@@ -1,18 +1,18 @@
 {
-  "name": "eggd_vcf_handler_for_uranus",
-  "title": "eggd_vcf_handler_for_uranus",
-  "summary": "Annotates and filters VCF files for Uranus",
+  "name": "eggd_vep",
+  "title": "eggd_vep",
+  "summary": "Annotates and filters VCF files",
   "properties": {
-    "githubRelease": "2.1.0"
+    "githubRelease": "1.0.0"
   },
   "dxapi": "1.0.0",
   "openSource": true,
-  "version": "2.1.0",
+  "version": "1.0.0",
   "inputSpec": [
     {
       "name": "vcf",
       "label": "gzipped vcf",
-      "help": "mutect2 vcf",
+      "help": "vcf",
       "class": "file",
       "patterns": ["*.vcf.gz"],
       "optional": false
@@ -89,76 +89,6 @@
       "help": "VCF that has been filtered and annotated using bedtools, bcftools and VEP",
       "class": "file",
       "patterns": ["*allgenesvep.vcf"]
-    },
-    {
-      "name": "lymphoid_filtered_vcf",
-      "label": "Filtered and annotated VCF for lymphoid panel genes",
-      "help": "VCF that has been filtered and annotated using bedtools, bcftools and VEP",
-      "class": "file",
-      "patterns": ["*lymphoidvep.vcf"]
-    },
-    {
-      "name": "myeloid_filtered_vcf",
-      "label": "Filtered and annotated VCF for myeloid panel genes",
-      "help": "VCF that has been filtered and annotated using bedtools, bcftools and VEP",
-      "class": "file",
-      "patterns": ["*myeloidvep.vcf"]
-    },
-    {
-      "name": "cll_filtered_vcf",
-      "label": "Filtered and annotated VCF for myeloid panel genes",
-      "help": "VCF that has been filtered and annotated using bedtools, bcftools and VEP",
-      "class": "file",
-      "patterns": ["*CLLvep.vcf"]
-    },
-    {
-      "name": "tp53_filtered_vcf",
-      "label": "Filtered and annotated VCF for myeloid panel genes",
-      "help": "VCF that has been filtered and annotated using bedtools, bcftools and VEP",
-      "class": "file",
-      "patterns": ["*TP53vep.vcf"]
-    },
-    {
-      "name": "lgl_filtered_vcf",
-      "label": "Filtered and annotated VCF for myeloid panel genes",
-      "help": "VCF that has been filtered and annotated using bedtools, bcftools and VEP",
-      "class": "file",
-      "patterns": ["*LGLvep.vcf"]
-    },
-    {
-      "name": "hcl_filtered_vcf",
-      "label": "Filtered and annotated VCF for myeloid panel genes",
-      "help": "VCF that has been filtered and annotated using bedtools, bcftools and VEP",
-      "class": "file",
-      "patterns": ["*HCLvep.vcf"]
-    },
-    {
-      "name": "lpl_filtered_vcf",
-      "label": "Filtered and annotated VCF for myeloid panel genes",
-      "help": "VCF that has been filtered and annotated using bedtools, bcftools and VEP",
-      "class": "file",
-      "patterns": ["*LPLvep.vcf"]
-    },
-    {
-      "name": "bsvi_vcf",
-      "label": "modified vcf for bsvi",
-      "help": "invalid vcf for bsvi workaround",
-      "class": "file",
-      "patterns": ["*_allgenes_bsvi.vcf"]
-    },
-    {
-      "name": "text_report",
-      "label": "Text variant report from all genes",
-      "help": "Text (tsv) list of variants from all genes",
-      "class": "file",
-      "patterns": ["*_allgenes.tsv"]
-    },
-    {
-      "name": "excel_report",
-      "label": "Excel variant report for scientists",
-      "help": "Excel workbook with variants for each panel in separate sheets",
-      "class": "file",
-      "patterns": ["*_panels.xlsx"]
     }
   ],
   "runSpec": {
@@ -184,12 +114,6 @@
         "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
         "folder": "/app_assets/htslib/htslib_v1.12.0",
         "version": "1.12.0"
-      },
-      {
-        "name": "python_packages",
-        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "folder": "/app_assets/python_packages/python_packages_v1.1.0",
-        "version": "1.1.0"
       }
     ]
   },
@@ -263,7 +187,7 @@
       }
     ],
     "contactEmail": "East GLH Bioinformatics",
-    "whatsNew": "* 2.1.0 Sample names added\n * 2.0.0 New panels; VEP input; previous counts\n * 1.5.7 Add CADD and ClinVar annotation\n * 1.5.3 Added excel workbook output with variants for each panel in separate sheets, removed synonymous variant filter, prefix exon numbers with the word exon to overcome excel, further report_text formatting\n * 1.4.12 Allele fraction in tsv variantlist\n * 1.4.10 Make mark-section and mark-success executable in github\n * 1.4.9 Minor changed to report_text field in tsv, and brings back gnomad AF in tsv(!)\n * 1.4.8 (Deprecated) Adds AF column to text report\n * 1.4.4 (Deprecated) Uses app assets\n * 1.3.4 (Deprecated) Creates text report\n * 1.2.10 (Deprecated) Creates BSVI VCF\n * 1.1.9 (Deprecated) With VEP\n * 1.0.0 (Deprecated) Initial app"
+    "whatsNew": "* 1.0.0 First release of VEP app (forked from vcf handler for Uranus and then stripped down)\n"
   },
   "categories": [],
   "access": {
