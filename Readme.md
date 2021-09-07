@@ -1,4 +1,4 @@
-# eggd vcf handler for uranus
+# eggd vep
 
 ## What does this app do?
 ### This app uses bedtools, bcftools and VEP to take VCFs from sentieon mutect2 and:
