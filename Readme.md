@@ -1,16 +1,13 @@
-# eggd vcf handler for uranus
+# eggd vep
 
 ## What does this app do?
 ### This app uses bedtools, bcftools and VEP to take VCFs from sentieon mutect2 and:
 - Annotates and filters the sentieon mutect2 VCF
-- Produces a excel workbook with sub-panels presented in separate sheets; also provides preformatted text to aid Epic data entry
-- Produces a VCF that can be used as input for BSVI, as BSVI can't handle mutect2's (VCFv4.2 compliant) representation of multiallelic variants in VCF
 
 ## What are typical use cases for this app?
 ### This app uses the follow tools which are app assets:
 * bcftools (v1.12)
 * bedtools (v2.30.0)
-* python_packages (numpy-1.20.1, pandas-1.2.3, pytz-2021.1, XlsxWriter-1.4.0)
 
 ### This app uses the following provided as inputs (these are all actually bundled into a single "VEP_tarball"):
 * VEP (v103.1) (docker image)
@@ -28,9 +25,7 @@
 - VEP tarball consisting of VEP docker, plugins and annotation sources (default specified)
 
 ## What does this app output?
-- Excel workbook of annotated variants
-- BSVI-friendly VCF
-- Intermediate VCFs
+- Filtered and annotated VCF
 
 ## How does this app work?
 - Filters VCF with bedtools:
@@ -58,8 +53,6 @@
 - Filters VCF with VEP:
     - Retain variants with gnomAD AF < 0.1
     - Remove synonymous variants
-- Generates variant lists (one panel per sheet) in an excel workbook
-- Generates BSVI-friendly VCF
 
 ## Limitations
 - Designed to be used as part of Uranus workflow for processing myeloid NGS panel
