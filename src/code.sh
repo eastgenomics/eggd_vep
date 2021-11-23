@@ -32,8 +32,8 @@ function annotate_vep_vcf {
 	cadd_snv=$(find ./ -name "*SNVs.tsv.gz")
 	cadd_indel=$(find ./ -name "*indel.tsv.gz")
 
-  # find gnomad files, remove leading ./
-  gnomad_genome_vcf=$(find ./ -name "gnomad.genomes.*.vcf.gz" | sed s'/.\///')
+	# find gnomad files, remove leading ./
+  	gnomad_genome_vcf=$(find ./ -name "gnomad.genomes.*.vcf.gz" | sed s'/.\///')
 
 	time docker run -v /home/dnanexus:/opt/vep/.vep \
 	ensemblorg/ensembl-vep:release_104.3 \
@@ -64,7 +64,6 @@ main() {
 	# move annotation sources to home
 	mv ~/in/vep_annotation/* /home/dnanexus/
 
-
 	mark-section "annotating"
 	
 	# vep needs permissions to write to /home/dnanexus
@@ -84,9 +83,25 @@ main() {
 	# load vep docker
 	docker load -i "$vep_docker_path"
 
+	#annotate
+	output_vcf="${vcf_prefix}_annotated.vcf"
+	print ($output_vcf)
+	annotate_vep_vcf "$vcf" "$output_vcf"
+
 	mark-section "uploading output"
 
   # upload output files
+
+	# Upload output vcf
+    annotated_filtered_vcf=$(dx upload $output_vcf --brief)
+
+    # The following line(s) use the utility dx-jobutil-add-output to format and
+    # add output variables to your job's output as appropriate for the output
+    # class.  Run "dx-jobutil-add-output -h" for more information on what it
+    # does.
+
+    dx-jobutil-add-output annotated_filtered_vcf "$annotated_filtered_vcf" --class=file
+	
 	
 	mark-success
 }
