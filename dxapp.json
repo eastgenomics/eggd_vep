@@ -11,10 +11,10 @@
   "inputSpec": [
     {
       "name": "vcf",
-      "label": "gzipped vcf",
+      "label": "vcf file",
       "help": "vcf",
       "class": "file",
-      "patterns": ["*.vcf.gz"],
+      "patterns": ["*.vcf"],
       "optional": false
     },
     {
@@ -106,6 +106,18 @@
         },
         {
           "$dnanexus_link": "file-G6BY8Pj433GjPF7j6kK5QZ75"
+        },
+        {
+          "$dnanexus_link": "file-G6P4Q50433GQGqgg17ggGX27"
+        },
+        {
+          "$dnanexus_link": "file-G6KV6Pj433GkBBF398p6XQXv"
+        },
+        {
+          "$dnanexus_link": "file-G6P4QK8433GppBFv57QBQB2J"
+        },
+        {
+          "$dnanexus_link": "file-G6P4QVj433Gk5FbKB11JPG6K"
         }
       ],
       "suggestions": [
