@@ -47,7 +47,7 @@ function annotate_vep_vcf {
 	--custom /opt/vep/.vep/"${cosmic_non_coding}",COSMIC,vcf,exact,0,ID \
   	--custom /opt/vep/.vep/"${gnomad_genome_vcf}",gnomADg,vcf,exact,0,AF,AF_AFR,AF_AMR,AF_ASJ,AF_EAS,AF_FIN,AF_NFE,AF_OTH \
 	--plugin CADD,/opt/vep/.vep/"${cadd_snv}",/opt/vep/.vep/"${cadd_indel}" \
-	--fields "$filter_fields" \
+	--fields "$filter_fields" --buffer_size 500 --fork 4 \
 	--no_stats
 }
 
