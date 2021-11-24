@@ -19,7 +19,8 @@ function annotate_vep_vcf {
 	
 	# fields to filter on
 	# hard coded in function for now, can be made an input but all are the same
-	filter_fields="SYMBOL,VARIANT_CLASS,Consequence,EXON,HGVSc,HGVSp,gnomAD_AF,gnomADg_AF,CADD_PHRED,Existing_variation,ClinVar,ClinVar_CLNDN,ClinVar_CLNSIG,COSMIC,Feature"
+	filter_fields="SYMBOL,VARIANT_CLASS,Consequence,EXON,HGVSc,HGVSp,gnomAD_AF,gnomADg_AF, \
+	CADD_PHRED,Existing_variation,ClinVar,ClinVar_CLNDN,ClinVar_CLNSIG,COSMIC,Feature"
 
 	# find clinvar vcf, remove leading ./
 	clinvar_vcf=$(find ./ -name "clinvar_*.vcf.gz" | sed s'/.\///')
@@ -29,7 +30,7 @@ function annotate_vep_vcf {
 	cosmic_non_coding=$(find ./ -name "CosmicNonCodingVariants*.vcf.gz" | sed s'/.\///')
 
 	# find CADD files, remove leading ./
-	cadd_snv=$(find ./ -name "*SNVs.tsv.gz")
+	cadd_snv=$(find ./ -name "*SNVs*.tsv.gz")
 	cadd_indel=$(find ./ -name "*indel.tsv.gz")
 
 	# find gnomad files, remove leading ./
@@ -44,7 +45,7 @@ function annotate_vep_vcf {
 	--custom /opt/vep/.vep/"${clinvar_vcf}",ClinVar,vcf,exact,0,CLNSIG,CLNREVSTAT,CLNDN \
 	--custom /opt/vep/.vep/"${cosmic_coding}",COSMIC,vcf,exact,0,ID \
 	--custom /opt/vep/.vep/"${cosmic_non_coding}",COSMIC,vcf,exact,0,ID \
-  --custom /opt/vep/.vep/"${gnomad_genome_vcf}",gnomADg,vcf,exact,0,AF,AF_AFR,AF_AMR,AF_ASJ,AF_EAS,AF_FIN,AF_NFE,AF_OTH \
+  	--custom /opt/vep/.vep/"${gnomad_genome_vcf}",gnomADg,vcf,exact,0,AF,AF_AFR,AF_AMR,AF_ASJ,AF_EAS,AF_FIN,AF_NFE,AF_OTH \
 	--plugin CADD,/opt/vep/.vep/"${cadd_snv}",/opt/vep/.vep/"${cadd_indel}" \
 	--fields "$filter_fields" \
 	--no_stats
@@ -61,8 +62,9 @@ main() {
 	find ~/in/vep_refs -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_refs
 	find ~/in/vep_annotation -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_annotation
 
-	# move annotation sources to home
+	# move annotation sources and input vcf to home 
 	mv ~/in/vep_annotation/* /home/dnanexus/
+	mv ~/in/vcf/* /home/dnanexus/
 
 	mark-section "annotating"
 	
@@ -73,6 +75,7 @@ main() {
 	time tar xf /home/dnanexus/in/vep_refs/*.tar.gz -C /home/dnanexus
 
 	# place fasta and indexes for VEP in the annotation folder
+	chmod a+rwx /home/dnanexus/in/vep_refs/*fa.gz*
 	mv /home/dnanexus/in/vep_refs/*fa.gz* ~/homo_sapiens_refseq/104_GRCh37/
 
 	# place plugins into plugins folder
@@ -85,8 +88,8 @@ main() {
 
 	#annotate
 	output_vcf="${vcf_prefix}_annotated.vcf"
-	print ($output_vcf)
-	annotate_vep_vcf "$vcf" "$output_vcf"
+	echo $output_vcf
+	annotate_vep_vcf "$vcf_name" "$output_vcf"
 
 	mark-section "uploading output"
 
