@@ -42,7 +42,7 @@ Annotate against specified refseq transcripts with
   - Cosmic NonCoding Variants VCF (v94)
       - CosmicNonCodingVariants_v94_grch37.normal.vcf.gz
       - CosmicNonCodingVariants_v94_grch37.normal.vcf.gz.tbi
-  - ClinVar VCF (20211002)
+  - ClinVar VCF (2021113)
       - clinvar_20211113_withChr.vcf.gz
       - clinvar_20211113_withChr.vcf.gz.tbi
   - CADD (v1.6)
