@@ -14,7 +14,7 @@
       "label": "vcf file",
       "help": "vcf",
       "class": "file",
-      "patterns": ["*.vcf", "*.vcf.gz"]],
+      "patterns": ["*.vcf", "*.vcf.gz"],
       "optional": false
     },
     {
@@ -91,7 +91,7 @@
       "help": "Reference file annotation sources for VEP and index (ClinVar,CADD, COSMIC, gnomad)",
       "class": "array:file",
       "optional": false,
-      "default": [   
+      "default": [
         {
           "$dnanexus_link": "file-G5KjGZ84YV3xFfv221vJQjQZ"
         },
@@ -128,8 +128,7 @@
         {
           "$dnanexus_link": "file-G6P4QVj433Gk5FbKB11JPG6K"
         }
-        
-      ],  
+      ],
       "suggestions": [
         {
           "name": "001_Reference",
@@ -137,11 +136,11 @@
           "path": "/annotation/b37/"
         }
       ]
-    }    
+    }
   ],
   "outputSpec": [
     {
-      "name": "annotated_filtered_vcf",
+      "name": "annotated_vcf",
       "label": "Filtered and annotated VCF",
       "help": "VCF that has been filtered and annotated using bcftools and VEP",
       "class": "file",
