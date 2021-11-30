@@ -1,23 +1,18 @@
 #!/bin/bash
 #
-# Performs annotation and filtering of given mutect2 VCF to produce multiple annotated VCFs
-# Performs filtering and annotation of given pindel VCF to produce annotated VCF
-# n.b. filtering for pindel is a combination of a bed file of regions, removal of all 1-2bp
-# insetions and filtering by transcript with vep
-# Generates an excel workbook to aid variant interpretation
-# Also generates a workaround for BSVI mis-handling multiallelics
+# Annotates input vcf with variant effect predictor (VEP) outputing the filter fields as seen in line 17
 
 function annotate_vep_vcf {
 	# Function to run VEP for annotation on given VCF file
 
 	# Inputs:
-	# $1 -> input vcf 
+	# $1 -> input vcf
 	# $2 -> name for output vcf
 
 	input_vcf="$1"
 	output_vcf="$2"
-	
-	# fields to filter on
+
+	# fields to annotate with.
 	# hard coded in function for now, can be made an input but all are the same
 	filter_fields="SYMBOL,VARIANT_CLASS,Consequence,EXON,HGVSc,HGVSp,gnomAD_AF,gnomADg_AF,CADD_PHRED,Existing_variation,ClinVar,ClinVar_CLNDN,ClinVar_CLNSIG,COSMIC,Feature"
 
@@ -37,7 +32,7 @@ function annotate_vep_vcf {
 	# which is missing in the standard gnomad annotation for GRCh37
   	gnomad_genome_vcf=$(find ./ -name "gnomad.genomes.*.vcf.gz" | sed s'/.\///')
 
-	# --exclude_null_allelels is used with --check-existing to prevent multiple COSMIC id's 
+	# --exclude_null_allelels is used with --check-existing to prevent multiple COSMIC id's
 	# being added to the same variant.
 	# the buffer size is chosen based on the average size of the input VCF
 
@@ -67,15 +62,15 @@ main() {
 	find ~/in/vep_refs -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_refs
 	find ~/in/vep_annotation -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_annotation
 
-	# move annotation sources and input vcf to home 
+	# move annotation sources and input vcf to home
 	mv ~/in/vep_annotation/* /home/dnanexus/
 	mv ~/in/vcf/* /home/dnanexus/
 
 	mark-section "annotating"
-	
+
 	# vep needs permissions to write to /home/dnanexus
 	chmod a+rwx /home/dnanexus
-	
+
 	# extract vep reference annotation tarball to /home/dnanexus
 	time tar xf /home/dnanexus/in/vep_refs/*.tar.gz -C /home/dnanexus
 
@@ -98,18 +93,9 @@ main() {
 
 	mark-section "uploading output"
 
-  # upload output files
-
 	# Upload output vcf
     annotated_vcf=$(dx upload $output_vcf --brief)
-
-    # The following line(s) use the utility dx-jobutil-add-output to format and
-    # add output variables to your job's output as appropriate for the output
-    # class.  Run "dx-jobutil-add-output -h" for more information on what it
-    # does.
-
     dx-jobutil-add-output annotated_filtered_vcf "$annotated_vcf" --class=file
-	
-	
+
 	mark-success
 }
