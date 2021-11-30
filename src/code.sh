@@ -101,14 +101,14 @@ main() {
   # upload output files
 
 	# Upload output vcf
-    annotated_filtered_vcf=$(dx upload $output_vcf --brief)
+    annotated_vcf=$(dx upload $output_vcf --brief)
 
     # The following line(s) use the utility dx-jobutil-add-output to format and
     # add output variables to your job's output as appropriate for the output
     # class.  Run "dx-jobutil-add-output -h" for more information on what it
     # does.
 
-    dx-jobutil-add-output annotated_filtered_vcf "$annotated_filtered_vcf" --class=file
+    dx-jobutil-add-output annotated_filtered_vcf "$annotated_vcf" --class=file
 	
 	
 	mark-success
