@@ -19,8 +19,7 @@ function annotate_vep_vcf {
 	
 	# fields to filter on
 	# hard coded in function for now, can be made an input but all are the same
-	filter_fields="SYMBOL,VARIANT_CLASS,Consequence,EXON,HGVSc,HGVSp,gnomAD_AF,gnomADg_AF, \
-	CADD_PHRED,Existing_variation,ClinVar,ClinVar_CLNDN,ClinVar_CLNSIG,COSMIC,Feature"
+	filter_fields="SYMBOL,VARIANT_CLASS,Consequence,EXON,HGVSc,HGVSp,gnomAD_AF,gnomADg_AF,CADD_PHRED,Existing_variation,ClinVar,ClinVar_CLNDN,ClinVar_CLNSIG,COSMIC,Feature"
 
 	# find clinvar vcf, remove leading ./
 	clinvar_vcf=$(find ./ -name "clinvar_*.vcf.gz" | sed s'/.\///')
@@ -30,18 +29,24 @@ function annotate_vep_vcf {
 	cosmic_non_coding=$(find ./ -name "CosmicNonCodingVariants*.vcf.gz" | sed s'/.\///')
 
 	# find CADD files, remove leading ./
-	cadd_snv=$(find ./ -name "*SNVs*.tsv.gz")
-	cadd_indel=$(find ./ -name "*indel.tsv.gz")
+	cadd_snv=$(find ./ -name "*SNVs*.tsv.gz" | sed s'/.\///')
+	cadd_indel=$(find ./ -name "*indel.tsv.gz" | sed s'/.\///')
 
 	# find gnomad files, remove leading ./
+	# gnomad genome files are required to enable frequency annotation for intronic variants
+	# which is missing in the standard gnomad annotation for GRCh37
   	gnomad_genome_vcf=$(find ./ -name "gnomad.genomes.*.vcf.gz" | sed s'/.\///')
 
-	time docker run -v /home/dnanexus:/opt/vep/.vep \
+	# --exclude_null_allelels is used with --check-existing to prevent multiple COSMIC id's 
+	# being added to the same variant.
+	# the buffer size is chosen based on the average size of the input VCF
+
+	/usr/bin/time -v docker run -v /home/dnanexus:/opt/vep/.vep \
 	ensemblorg/ensembl-vep:release_104.3 \
 	./vep -i /opt/vep/.vep/"${input_vcf}" -o /opt/vep/.vep/"${output_vcf}" \
 	--vcf --cache --refseq --exclude_predicted --symbol --hgvs --af_gnomad \
 	--check_existing --variant_class --numbers \
-	--offline \
+	--offline --exclude_null_alleles \
 	--custom /opt/vep/.vep/"${clinvar_vcf}",ClinVar,vcf,exact,0,CLNSIG,CLNREVSTAT,CLNDN \
 	--custom /opt/vep/.vep/"${cosmic_coding}",COSMIC,vcf,exact,0,ID \
 	--custom /opt/vep/.vep/"${cosmic_non_coding}",COSMIC,vcf,exact,0,ID \
