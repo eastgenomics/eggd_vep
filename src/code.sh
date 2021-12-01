@@ -45,7 +45,7 @@ function annotate_vep_vcf {
 	--custom /opt/vep/.vep/"${clinvar_vcf}",ClinVar,vcf,exact,0,CLNSIG,CLNREVSTAT,CLNDN \
 	--custom /opt/vep/.vep/"${cosmic_coding}",COSMIC,vcf,exact,0,ID \
 	--custom /opt/vep/.vep/"${cosmic_non_coding}",COSMIC,vcf,exact,0,ID \
-  	--custom /opt/vep/.vep/"${gnomad_genome_vcf}",gnomADg,vcf,exact,0,AF,AF_AFR,AF_AMR,AF_ASJ,AF_EAS,AF_FIN,AF_NFE,AF_OTH \
+	--custom /opt/vep/.vep/"${gnomad_genome_vcf}",gnomADg,vcf,exact,0,AF,AF_AFR,AF_AMR,AF_ASJ,AF_EAS,AF_FIN,AF_NFE,AF_OTH \
 	--plugin CADD,/opt/vep/.vep/"${cadd_snv}",/opt/vep/.vep/"${cadd_indel}" \
 	--fields "$filter_fields" --buffer_size 500 --fork 4 \
 	--no_stats
@@ -94,8 +94,8 @@ main() {
 	mark-section "uploading output"
 
 	# Upload output vcf
-    annotated_vcf=$(dx upload $output_vcf --brief)
-    dx-jobutil-add-output annotated_filtered_vcf "$annotated_vcf" --class=file
+	annotated_vcf=$(dx upload $output_vcf --brief)
+	dx-jobutil-add-output annotated_filtered_vcf "$annotated_vcf" --class=file
 
 	mark-success
 }

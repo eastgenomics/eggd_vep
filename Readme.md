@@ -21,6 +21,7 @@ Annotate against specified refseq transcripts with
 - ClinVar
 - ClinVar - Clinical Indication
 - ClinVar - Clinical Significance
+- Cosmic Coding & Non-Coding
 - Transcript Feature
 
 ## What data are required for this app to run?
@@ -41,7 +42,7 @@ Annotate against specified refseq transcripts with
   - Cosmic NonCoding Variants VCF (v94)
       - CosmicNonCodingVariants_v94_grch37.normal.vcf.gz
       - CosmicNonCodingVariants_v94_grch37.normal.vcf.gz.tbi
-  - ClinVar VCF (2021113)
+  - ClinVar VCF (20211113)
       - clinvar_20211113_withChr.vcf.gz
       - clinvar_20211113_withChr.vcf.gz.tbi
   - CADD (v1.6)
