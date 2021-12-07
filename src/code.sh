@@ -32,6 +32,11 @@ function annotate_vep_vcf {
 	# which is missing in the standard gnomad annotation for GRCh37
   	gnomad_genome_vcf=$(find ./ -name "gnomad.genomes.*.vcf.gz" | sed s'/.\///')
 
+	# Get number of cores/threads to use in --fork option
+	forks=$(grep -c ^processor /proc/cpuinfo)
+	echo "Number of forks: $forks"
+	echo "Buffer size used: $buffer_size"
+
 	# --exclude_null_allelels is used with --check-existing to prevent multiple COSMIC id's
 	# being added to the same variant.
 	# the buffer size is chosen based on the average size of the input VCF
@@ -47,7 +52,7 @@ function annotate_vep_vcf {
 	--custom /opt/vep/.vep/"${cosmic_non_coding}",COSMIC,vcf,exact,0,ID \
 	--custom /opt/vep/.vep/"${gnomad_genome_vcf}",gnomADg,vcf,exact,0,AF,AF_AFR,AF_AMR,AF_ASJ,AF_EAS,AF_FIN,AF_NFE,AF_OTH \
 	--plugin CADD,/opt/vep/.vep/"${cadd_snv}",/opt/vep/.vep/"${cadd_indel}" \
-	--fields "$filter_fields" --buffer_size 500 --fork 4 \
+	--fields "$filter_fields" --buffer_size  $buffer_size --fork "$forks" \
 	--no_stats
 }
 

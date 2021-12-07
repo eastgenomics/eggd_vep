@@ -136,6 +136,14 @@
           "path": "/annotation/b37/"
         }
       ]
+    },
+    {
+      "name": "buffer_size",
+      "label": "Number of variants to annotate",
+      "help": "To make annoating  more efficient, the number of variants to annotate can chosen. Default is 500 but can be tweaked for bigger files.",
+      "class": "int",
+      "optional": true,
+      "default": 500
     }
   ],
   "outputSpec": [
