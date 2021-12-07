@@ -52,7 +52,7 @@ function annotate_vep_vcf {
 	--custom /opt/vep/.vep/"${cosmic_non_coding}",COSMIC,vcf,exact,0,ID \
 	--custom /opt/vep/.vep/"${gnomad_genome_vcf}",gnomADg,vcf,exact,0,AF,AF_AFR,AF_AMR,AF_ASJ,AF_EAS,AF_FIN,AF_NFE,AF_OTH \
 	--plugin CADD,/opt/vep/.vep/"${cadd_snv}",/opt/vep/.vep/"${cadd_indel}" \
-	--fields "$filter_fields" --buffer_size  $buffer_size --fork "$forks" \
+	--fields "$filter_fields" --buffer_size "$buffer_size" --fork "$forks" \
 	--no_stats
 }
 
@@ -81,7 +81,13 @@ main() {
 
 	# place fasta and indexes for VEP in the annotation folder
 	chmod a+rwx /home/dnanexus/in/vep_refs/*fa.gz*
-	mv /home/dnanexus/in/vep_refs/*fa.gz* ~/homo_sapiens_refseq/104_GRCh37/
+
+	# Find the annotation cache folder dynamically to allow different versions of VEP and genome to be used
+	# This will only work with refseq annotation caches currently as this is passed in the VEP command
+	# We can consider changing this if non-refseq files are required but it needs the --refseq flag to become optional
+	cache_path=$(find homo_sapiens_refseq -mindepth 1 -maxdepth 1 -type d -name "*_GRCh3*" )
+	echo "$cache_path"
+	mv /home/dnanexus/in/vep_refs/*fa.gz* ~/"${cache_path}"
 
 	# place plugins into plugins folder
 	mkdir ~/Plugins
