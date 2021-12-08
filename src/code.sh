@@ -106,7 +106,7 @@ main() {
 
 	# Upload output vcf
 	annotated_vcf=$(dx upload $output_vcf --brief)
-	dx-jobutil-add-output annotated_filtered_vcf "$annotated_vcf" --class=file
+	dx-jobutil-add-output annotated_vcf "$annotated_vcf" --class=file
 
 	mark-success
 }
