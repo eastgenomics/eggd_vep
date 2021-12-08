@@ -64,7 +64,6 @@ __This app uses the follow tools which are app assets:__
 ## What does this app output?
 - Annotated vcf with the specified fields mentioned above.
 
-## Limitations
+## Notes
 - Designed to be used as part of Helios workflow for processing Solid Cancer data for GRCh37 so all defaults are based on that.
-- This app uses a buffer_size of 500 variants and parallelised using 4 cores. This was chosen with the solid cancer vcfs in mind and may need to be tweaked or changed for bigger vcfs.
-
+- This app uses a buffer_size of 500 variants and parallelised the maximum number of cores available.As a default this app runs using mem1_ssd2_v2_x4 which translates to 4 cores. This was chosen with the solid cancer vcfs in mind as mentioned in the inputs section the buffer size can be given as an argument and the instance changed at runtime.
