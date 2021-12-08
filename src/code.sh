@@ -1,148 +1,112 @@
 #!/bin/bash
 #
-# Decomposed multiallelic variants
-# Annotates variants using VEP
-#
-# The following line causes bash to exit at any point if there is any error
-# and to output each line as it is executed -- useful for debugging
-# Additionally -v is included here (enables "Print shell input lines as they
-# are read") to overcome issues with how quotes are displayed in the log
-# (sometimes single quotes become no quotes and double quotes become single
-# quotes)
-# See https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
-set -e -x -v -o pipefail
+# Annotates input vcf with variant effect predictor (VEP) outputing the filter fields as seen in line 17
 
-mark-section "downloading inputs"
-dx-download-all-inputs --parallel
+function annotate_vep_vcf {
+	# Function to run VEP for annotation on given VCF file
 
-mark-section "filtering and splitting multiallelics"
-# retain variants that are: # within ROIs (bed file),
-#   have at least one allele >0.03 AF, and have DP >99
-# fix AD and RPA number in header
-# split multiallelics using --keep-sum AD which changes the ref AD to be a sum
-#   of all other AD's rather than being ref AD alone
-# note that --keep-sum AD is a one way conversion in bcftools 1.12.0 and can't
-#   be undone with bcftools norm -m +any
-# bedtools and bcftools are app assets
-splitfile="${vcf_prefix}_split.vcf"
-bedtools intersect -header -a "${vcf_path}" -b "${bed_path}" \
-  | bcftools view -i "FORMAT/AF[*]>0.03" - \
-  | bcftools view -i "DP>99" - \
-  | sed 's/AD,Number=./AD,Number=R/g' \
-  | sed 's/RPA,Number=./RPA,Number=R/g' \
-  | bcftools norm -f "${mutect2_fasta_path}" -m -any --keep-sum AD - \
-  -o ~/"${splitfile}"
+	# Inputs:
+	# $1 -> input vcf
+	# $2 -> name for output vcf
 
+	input_vcf="$1"
+	output_vcf="$2"
 
-mark-section "annotating and further filtering"
-# vep needs permissions to write to /home/dnanexus
-chmod a+rwx /home/dnanexus
-# extract vep tarball (input) to /home/dnanexus
-tar xf "${vep_tarball_path}" -C /home/dnanexus
-# extract annotation tarball to /home/dnanexus
-tar xf ~/homo_sapiens_refseq_vep_103_GRCh38.tar.gz
-# place fasta and indexes for VEP in the annotation folder
-mv ~/Homo_sapiens.GRCh38.dna.toplevel.fa.gz \
-  ~/homo_sapiens_refseq/103_GRCh38/
-mv ~/Homo_sapiens.GRCh38.dna.toplevel.fa.gz.fai \
-  ~/homo_sapiens_refseq/103_GRCh38/
-mv ~/Homo_sapiens.GRCh38.dna.toplevel.fa.gz.gzi \
-  ~/homo_sapiens_refseq/103_GRCh38/
-# place plugins into plugins folder
-mkdir ~/Plugins
-mv ~/CADD.pm ~/Plugins/
-mv ~/plugin_config.txt ~/Plugins/
-# load vep docker (asset)
-docker load -i ~/vep_v103.1_docker.tar.gz
-# will run vep to annotate against specified transcripts for all, lymphoid
-# and myeloid gene lists
-# run vep for all genes list
-allgenesfile="${vcf_prefix}_allgenes.vcf"
-docker run -v /home/dnanexus:/opt/vep/.vep \
-  ensemblorg/ensembl-vep:release_103.1 \
-  ./vep -i /opt/vep/.vep/"${splitfile}" -o /opt/vep/.vep/"${allgenesfile}" \
-  --vcf --cache --refseq --exclude_predicted --symbol --hgvs --af_gnomad \
-  --check_existing --variant_class --numbers \
-  --custom /opt/vep/.vep/clinvar_withchr_20210501.vcf.gz,ClinVar,vcf,exact,0,CLNSIG,CLNREVSTAT,CLNDN \
-  --custom /opt/vep/.vep/138_merge_sort.vcf.gz,Prev,vcf,exact,0,AC,NS \
-  --plugin CADD,/opt/vep/.vep/whole_genome_SNVs.tsv.gz,/opt/vep/.vep/gnomad.genomes.r3.0.indel.tsv.gz \
-  --fields \
-  "SYMBOL,VARIANT_CLASS,Consequence,EXON,HGVSc,HGVSp,gnomAD_AF,CADD_PHRED,Existing_variation,ClinVar,ClinVar_CLNDN,ClinVar_CLNSIG,Prev_AC,Prev_NS" \
-  --no_stats --transcript_filter \
-  "stable_id match NM_002074 \
-  or stable_id match NM_000760 \
-  or stable_id match NM_005373 \
-  or stable_id match NM_002227 \
-  or stable_id match NM_002524 \
-  or stable_id match NM_022552 \
-  or stable_id match NM_012433 \
-  or stable_id match NM_005896 \
-  or stable_id match NM_002468 \
-  or stable_id match NM_032638 \
-  or stable_id match NM_000222 \
-  or stable_id match NM_001127208 \
-  or stable_id match NM_033632 \
-  or stable_id match NM_002520 \
-  or stable_id match NM_016222 \
-  or stable_id match NM_006060 \
-  or stable_id match NM_181500 \
-  or stable_id match NM_004333 \
-  or stable_id match NM_004456 \
-  or stable_id match NM_170606 \
-  or stable_id match NM_006265 \
-  or stable_id match NM_004972 \
-  or stable_id match NM_016734 \
-  or stable_id match NM_017617 \
-  or stable_id match NM_000314 \
-  or stable_id match NM_005343 \
-  or stable_id match NM_024426 \
-  or stable_id match NM_001165 \
-  or stable_id match NM_000051 \
-  or stable_id match NM_001197104 \
-  or stable_id match NM_005188 \
-  or stable_id match NM_001987 \
-  or stable_id match NM_018638 \
-  or stable_id match NM_033360 \
-  or stable_id match NM_001136023 \
-  or stable_id match NM_005475 \
-  or stable_id match NM_002834 \
-  or stable_id match NM_004119 \
-  or stable_id match NM_002168 \
-  or stable_id match NM_004380 \
-  or stable_id match NM_000546 \
-  or stable_id match NM_001042492 \
-  or stable_id match NM_012448 \
-  or stable_id match NM_139276 \
-  or stable_id match NM_003620 \
-  or stable_id match NM_001195427 \
-  or stable_id match NM_015559 \
-  or stable_id match NM_004343 \
-  or stable_id match NM_004364 \
-  or stable_id match NM_015338 \
-  or stable_id match NM_080425 \
-  or stable_id match NM_001754 \
-  or stable_id match NM_006758 \
-  or stable_id match NM_007194 \
-  or stable_id match NM_001429 \
-  or stable_id match NM_005089 \
-  or stable_id match NM_001123385 \
-  or stable_id match NM_002049 \
-  or stable_id match NM_001042750 \
-  or stable_id match NM_001184772 \
-  or stable_id match NM_001015877"
-# run vep filtering to remove high AF and outside genelist
-allgenesvepfile="${vcf_prefix}_allgenesvep.vcf"
-docker run -v /home/dnanexus:/opt/vep/.vep \
-  ensemblorg/ensembl-vep:release_103.1 \
-  ./filter_vep -i /opt/vep/.vep/"${allgenesfile}" \
-  -o /opt/vep/.vep/"${allgenesvepfile}" --only_matched --filter \
-  "(gnomAD_AF < 0.10 or not gnomAD_AF)"
+	# fields to annotate with.
+	# hard coded in function for now, can be made an input but all are the same
+	filter_fields="SYMBOL,VARIANT_CLASS,Consequence,EXON,HGVSc,HGVSp,gnomAD_AF,gnomADg_AF,CADD_PHRED,Existing_variation,ClinVar,ClinVar_CLNDN,ClinVar_CLNSIG,COSMIC,Feature"
+
+	# find clinvar vcf, remove leading ./
+	clinvar_vcf=$(find ./ -name "clinvar_*.vcf.gz" | sed s'/.\///')
+
+	# find cosmic coding and non-coding vcfs
+	cosmic_coding=$(find ./ -name "CosmicCodingMuts*.vcf.gz" | sed s'/.\///')
+	cosmic_non_coding=$(find ./ -name "CosmicNonCodingVariants*.vcf.gz" | sed s'/.\///')
+
+	# find CADD files, remove leading ./
+	cadd_snv=$(find ./ -name "*SNVs*.tsv.gz" | sed s'/.\///')
+	cadd_indel=$(find ./ -name "*indel.tsv.gz" | sed s'/.\///')
+
+	# find gnomad files, remove leading ./
+	# gnomad genome files are required to enable frequency annotation for intronic variants
+	# which is missing in the standard gnomad annotation for GRCh37
+  	gnomad_genome_vcf=$(find ./ -name "gnomad.genomes.*.vcf.gz" | sed s'/.\///')
+
+	# Get number of cores/threads to use in --fork option
+	forks=$(grep -c ^processor /proc/cpuinfo)
+	echo "Number of forks: $forks"
+	echo "Buffer size used: $buffer_size"
+
+	# --exclude_null_allelels is used with --check-existing to prevent multiple COSMIC id's
+	# being added to the same variant.
+	# the buffer size is chosen based on the average size of the input VCF
+
+	/usr/bin/time -v docker run -v /home/dnanexus:/opt/vep/.vep \
+	ensemblorg/ensembl-vep:release_104.3 \
+	./vep -i /opt/vep/.vep/"${input_vcf}" -o /opt/vep/.vep/"${output_vcf}" \
+	--vcf --cache --refseq --exclude_predicted --symbol --hgvs --af_gnomad \
+	--check_existing --variant_class --numbers \
+	--offline --exclude_null_alleles \
+	--custom /opt/vep/.vep/"${clinvar_vcf}",ClinVar,vcf,exact,0,CLNSIG,CLNREVSTAT,CLNDN \
+	--custom /opt/vep/.vep/"${cosmic_coding}",COSMIC,vcf,exact,0,ID \
+	--custom /opt/vep/.vep/"${cosmic_non_coding}",COSMIC,vcf,exact,0,ID \
+	--custom /opt/vep/.vep/"${gnomad_genome_vcf}",gnomADg,vcf,exact,0,AF,AF_AFR,AF_AMR,AF_ASJ,AF_EAS,AF_FIN,AF_NFE,AF_OTH \
+	--plugin CADD,/opt/vep/.vep/"${cadd_snv}",/opt/vep/.vep/"${cadd_indel}" \
+	--fields "$filter_fields" --buffer_size "$buffer_size" --fork "$forks" \
+	--no_stats
+}
+
+main() {
+	set -e -x -v -o pipefail
+
+	mark-section "downloading inputs"
+	time dx-download-all-inputs --parallel
+
+	# array inputs end up in subdirectories (i.e. ~/in/array-input/0/), flatten to parent dir
+	find ~/in/vep_plugins -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_plugins
+	find ~/in/vep_refs -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_refs
+	find ~/in/vep_annotation -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_annotation
+
+	# move annotation sources and input vcf to home
+	mv ~/in/vep_annotation/* /home/dnanexus/
+	mv ~/in/vcf/* /home/dnanexus/
+
+	mark-section "annotating"
+
+	# vep needs permissions to write to /home/dnanexus
+	chmod a+rwx /home/dnanexus
+
+	# extract vep reference annotation tarball to /home/dnanexus
+	time tar xf /home/dnanexus/in/vep_refs/*.tar.gz -C /home/dnanexus
+
+	# place fasta and indexes for VEP in the annotation folder
+	chmod a+rwx /home/dnanexus/in/vep_refs/*fa.gz*
+
+	# Find the annotation cache folder dynamically to allow different versions of VEP and genome to be used
+	# This will only work with refseq annotation caches currently as this is passed in the VEP command
+	# We can consider changing this if non-refseq files are required but it needs the --refseq flag to become optional
+	cache_path=$(find homo_sapiens_refseq -mindepth 1 -maxdepth 1 -type d -name "*_GRCh3*" )
+	echo "$cache_path"
+	mv /home/dnanexus/in/vep_refs/*fa.gz* ~/"${cache_path}"
+
+	# place plugins into plugins folder
+	mkdir ~/Plugins
+	mv ~/in/vep_plugins/* ~/Plugins/
 
 
-mark-section "uploading output"
-mkdir -p ~/out/allgenes_filtered_vcf
-mv ~/"${allgenesvepfile}" ~/out/allgenes_filtered_vcf/
+	# load vep docker
+	docker load -i "$vep_docker_path"
 
-dx-upload-all-outputs --parallel
+	#annotate
+	output_vcf="${vcf_prefix}_annotated.vcf"
+	echo $output_vcf
+	annotate_vep_vcf "$vcf_name" "$output_vcf"
 
-mark-success
+	mark-section "uploading output"
+
+	# Upload output vcf
+	annotated_vcf=$(dx upload $output_vcf --brief)
+	dx-jobutil-add-output annotated_vcf "$annotated_vcf" --class=file
+
+	mark-success
+}

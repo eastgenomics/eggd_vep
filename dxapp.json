@@ -11,84 +11,205 @@
   "inputSpec": [
     {
       "name": "vcf",
-      "label": "gzipped vcf",
+      "label": "vcf file",
       "help": "vcf",
       "class": "file",
-      "patterns": ["*.vcf.gz"],
+      "patterns": ["*.vcf", "*.vcf.gz"],
       "optional": false
     },
     {
-      "name": "bed",
-      "label": "bed file used to define regions of interest",
-      "help": "The bed file will be used to remove variants outside the regions of interest",
+      "name": "vep_docker",
+      "label": "VEP docker image",
+      "help": "compressed docker image of VEP",
       "class": "file",
-      "patterns": ["coding_unrestricted*.bed"],
-      "default": {"$dnanexus_link": "file-FybyxV841zgB8v1y3fFbFB0G"},
+      "patterns": ["*.tar.gz"],
+      "optional": false,
+      "default": {
+        "$dnanexus_link": {
+          "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+          "id": "file-G6BYQP8433Gjf2j8KQ0fkvZJ"
+        }
+      },
       "suggestions": [
         {
           "name": "001_Reference",
           "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/bed_files/b38/kits/myeloid"
+          "path": "/assets/vep/vep_docker_v104.3/"
         }
-      ],
-      "optional": false
+      ]
     },
     {
-      "name": "mutect2_fasta",
-      "label": "FASTA for bcftools to split multiallelics",
-      "help": "Should be equivalent FASTA as used by mutect2",
-      "class": "file",
-      "patterns": ["GRCh38.no_alt_analysis_set_chr_mask21.fa.gz"],
-      "default": {"$dnanexus_link": "file-Fy4gjFj41zgGjKJ85FYYPX4q"},
+      "name": "vep_plugins",
+      "label": "plugin files for VEP",
+      "help": "Associated plugin files for VEP",
+      "class": "array:file",
+      "optional": false,
+      "default": [
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6BYQGQ433Gg0KfZF5xPfv1X"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6BYQF0433Gb7jGP4qbQx0G6"
+          }
+        }
+      ],
       "suggestions": [
         {
           "name": "001_Reference",
           "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/genomes/b38"
+          "path": "/assets/vep/vep_docker_v104.3/"
         }
-      ],
-      "optional": false
+      ]
     },
     {
-      "name": "mutect2_fai",
-      "label": "mutect2 fai index",
-      "help": "Should be equivalent fai index as used by mutect2",
-      "class": "file",
-      "patterns": ["GRCh38.no_alt_analysis_set_chr_mask21.fa.fai"],
-      "default": {"$dnanexus_link": "file-FyFGvzQ41zgBq7xf4Gy9Q28g"},
+      "name": "vep_refs",
+      "label": "reference sources for VEP",
+      "help": "Reference file annotation sources required for VEP",
+      "class": "array:file",
+      "optional": false,
+      "default": [
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6BYyyj4YV3pYBkgFVGP2K4P"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6P32kj4YV3y58KyP4k4qG2p"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6BYz104YV3X5qp463K5b5vp"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6QGkZ84YV3QZfg551QqkxQX"
+          }
+        }
+      ],
       "suggestions": [
         {
           "name": "001_Reference",
           "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/genomes/b38"
+          "path": "/annotation/b37/vep/"
         }
-      ],
-      "optional": false
+      ]
     },
     {
-      "name": "vep_tarball",
-      "label": "vep docker and annotation sources",
-      "help": "tarball containing VEP docker image, plugins and annotation sources",
-      "class": "file",
-      "patterns": ["vep*.tar"],
-      "default": {"$dnanexus_link": "file-G2K4XZQ433GXjVfF58jJ0F05"},
+      "name": "vep_annotation",
+      "label": "annotation sources for VEP",
+      "help": "Reference file annotation sources for VEP and index (ClinVar,CADD, COSMIC, gnomad)",
+      "class": "array:file",
+      "optional": false,
+      "default": [
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G5KjGZ84YV3xFfv221vJQjQZ"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G5KjKf84YV3y39z97vbXJ60b"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6BYB5Q433GvQGgF58976p7J"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6BYB8j433GyJ3f13z8GB4ZV"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6BY8X0433GbVBG06pFPvjp7"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6BY8Pj433GjPF7j6kK5QZ75"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6BZ9Pj433GbJPBq21XB939z"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6BZ9JQ433GgPPj2Jy5jpvkJ"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6P4Q50433GQGqgg17ggGX27"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6P4QK8433GppBFv57QBQB2J"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6KV6Pj433GkBBF398p6XQXv"
+          }
+        },
+        {
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-G6P4QVj433Gk5FbKB11JPG6K"
+          }
+        }
+      ],
       "suggestions": [
         {
           "name": "001_Reference",
           "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/assets/vep/vep_v103.1.3"
+          "path": "/annotation/b37/"
         }
-      ],
-      "optional": false
+      ]
+    },
+    {
+      "name": "buffer_size",
+      "label": "Number of variants to annotate",
+      "help": "To make annoating  more efficient, the number of variants to annotate can chosen. Default is 500 but can be tweaked for bigger files.",
+      "class": "int",
+      "optional": true,
+      "default": 500
     }
   ],
   "outputSpec": [
     {
-      "name": "allgenes_filtered_vcf",
-      "label": "Filtered and annotated VCF for all panel genes",
-      "help": "VCF that has been filtered and annotated using bedtools, bcftools and VEP",
+      "name": "annotated_vcf",
+      "label": "Filtered and annotated VCF",
+      "help": "VCF that has been filtered and annotated using bcftools and VEP",
       "class": "file",
-      "patterns": ["*allgenesvep.vcf"]
+      "patterns": ["*annotated.vcf"]
     }
   ],
   "runSpec": {
@@ -112,11 +233,15 @@
       {
         "name": "htslib",
         "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "folder": "/app_assets/htslib/htslib_v1.12.0",
-        "version": "1.12.0"
+        "folder": "/app_assets/htslib/htslib_v1.14.0",
+        "version": "1.14.0"
       }
     ]
   },
+  "developers":[
+    "user-toutoua",
+    "org-emee_1"
+  ],
   "authorizedUsers": [
     "org-emee_1"
   ],
