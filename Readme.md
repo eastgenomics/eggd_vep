@@ -56,6 +56,11 @@ Annotate against specified refseq transcripts with
 __This app uses the follow tools which are app assets:__
 * htslib (v1.14)
 * bedtools (v2.30.0)
+
+## What are the optional inputs for this app?
+- buffer_size [default = 500] : to allow for parallelisation the app recognised the instance type and splits annotation in the amount of available cores. The buffer size is the amount of variants VEP will annotate per core.
+
+> For larger vcfs please consider about the appropriate  instance type and buffer size to use.
 ## What does this app output?
 - Annotated vcf with the specified fields mentioned above.
 
