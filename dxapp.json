@@ -223,20 +223,7 @@
     "release": "20.04",
     "version": "0",
     "file": "src/code.sh",
-    "assetDepends": [
-      {
-        "name": "bedtools",
-        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "folder": "/app_assets/bedtools/bedtools_v2.30.0",
-        "version": "2.30.0"
-      },
-      {
-        "name": "htslib",
-        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-        "folder": "/app_assets/htslib/htslib_v1.14.0",
-        "version": "1.14.0"
-      }
-    ]
+    "assetDepends": []
   },
   "developers":[
     "user-toutoua",
@@ -256,52 +243,10 @@
   },
   "details": {
     "citations": [
-      "doi:10.1093/bioinformatics/btp352",
-      "doi:10.1093/bioinformatics/btq033",
       "doi:10.1186/s13059-016-0974-4",
       "doi:10.1186/s13073-021-00835-9"
     ],
     "upstreamProjects": [
-      {
-        "name": "bcftools",
-        "repoUrl": "https://github.com/samtools/bcftools",
-        "version": "1.11",
-        "license": "MIT/Expat",
-        "licenseUrl": "https://github.com/samtools/bcftools/blob/1.11/LICENSE",
-        "author": "samtools"
-      },
-      {
-        "name": "bedtools",
-        "repoUrl": "https://github.com/arq5x/bedtools2",
-        "version": "2.29.2",
-        "license": "MIT",
-        "licenseUrl": "https://github.com/arq5x/bedtools2/blob/v2.29.2/LICENSE",
-        "author": "Quinlan Laboratory at the University of Virginia"
-      },
-      {
-        "name": "bgzip",
-        "repoUrl": "https://github.com/samtools/htslib",
-        "version": "1.11",
-        "license": "MIT/Expat",
-        "licenseUrl": "https://github.com/samtools/htslib/blob/1.11/LICENSE",
-        "author": "samtools"
-      },
-      {
-        "name": "samtools",
-        "repoUrl": "https://github.com/samtools/samtools",
-        "version": "1.11",
-        "license": "MIT/Expat",
-        "licenseUrl": "https://github.com/samtools/samtools/blob/1.11/LICENSE",
-        "author": "samtools"
-      },
-      {
-        "name": "tabix",
-        "repoUrl": "https://github.com/samtools/htslib",
-        "version": "1.11",
-        "license": "MIT/Expat",
-        "licenseUrl": "https://github.com/samtools/htslib/blob/1.11/LICENSE",
-        "author": "samtools"
-      },
       {
         "name": "VEP",
         "repoUrl": "https://github.com/Ensembl/ensembl-vep",
