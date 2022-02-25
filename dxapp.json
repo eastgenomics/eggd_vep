@@ -48,12 +48,6 @@
         {
           "$dnanexus_link": {
             "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYQGQ433Gg0KfZF5xPfv1X"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
             "id": "file-G6BYQF0433Gb7jGP4qbQx0G6"
           }
         }
@@ -107,100 +101,19 @@
       ]
     },
     {
-      "name": "vep_annotation",
-      "label": "annotation sources for VEP",
-      "help": "Reference file annotation sources for VEP and index (ClinVar,CADD, COSMIC, gnomad)",
-      "class": "array:file",
-      "optional": false,
-      "default": [
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G5KjGZ84YV3xFfv221vJQjQZ"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G5KjKf84YV3y39z97vbXJ60b"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYB5Q433GvQGgF58976p7J"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYB8j433GyJ3f13z8GB4ZV"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BY8X0433GbVBG06pFPvjp7"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BY8Pj433GjPF7j6kK5QZ75"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BZ9Pj433GbJPBq21XB939z"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BZ9JQ433GgPPj2Jy5jpvkJ"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6P4Q50433GQGqgg17ggGX27"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6P4QK8433GppBFv57QBQB2J"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6KV6Pj433GkBBF398p6XQXv"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6P4QVj433Gk5FbKB11JPG6K"
-          }
-        }
-      ],
-      "suggestions": [
-        {
-          "name": "001_Reference",
-          "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/annotation/b37/"
-        }
-      ]
-    },
-    {
       "name": "buffer_size",
       "label": "Number of variants to annotate",
       "help": "To make annoating  more efficient, the number of variants to annotate can chosen. Default is 500 but can be tweaked for bigger files.",
       "class": "int",
       "optional": true,
       "default": 500
+    },
+    {
+      "name": "config_file",
+      "label": "Configuration file stating the annotation sources to be used",
+      "help": "File describing annotation files to be used",
+      "class": "file",
+      "optional": false
     }
   ],
   "outputSpec": [
