@@ -2,7 +2,7 @@
 #
 # Annotates input vcf with variant effect predictor (VEP) outputing the filter fields as seen in line 17
 
-function annotate_vep_vcf {
+_annotate_vep_vcf () {
 	# Function to run VEP for annotation on given VCF file
 
 	# Inputs:
@@ -14,27 +14,10 @@ function annotate_vep_vcf {
 
 	# fields to annotate with.
 	# hard coded in function for now, can be made an input but all are the same
-	filter_fields="SYMBOL,VARIANT_CLASS,Consequence,EXON,HGVSc,HGVSp,gnomAD_AF,gnomADg_AF,CADD_PHRED,Existing_variation,ClinVar,ClinVar_CLNDN,ClinVar_CLNSIG,COSMIC,Feature"
-
-	# find clinvar vcf, remove leading ./
-	clinvar_vcf=$(find ./ -name "clinvar_*.vcf.gz" | sed s'/.\///')
-
-	# find cosmic coding and non-coding vcfs
-	cosmic_coding=$(find ./ -name "CosmicCodingMuts*.vcf.gz" | sed s'/.\///')
-	cosmic_non_coding=$(find ./ -name "CosmicNonCodingVariants*.vcf.gz" | sed s'/.\///')
-
-	# find CADD files, remove leading ./
-	cadd_snv=$(find ./ -name "*SNVs*.tsv.gz" | sed s'/.\///')
-	cadd_indel=$(find ./ -name "*indel.tsv.gz" | sed s'/.\///')
-
-	# find gnomad files, remove leading ./
-	# gnomad genome files are required to enable frequency annotation for intronic variants
-	# which is missing in the standard gnomad annotation for GRCh37
-  	gnomad_genome_vcf=$(find ./ -name "gnomad.genomes.*.vcf.gz" | sed s'/.\///')
+	#filter_fields="SYMBOL,VARIANT_CLASS,Consequence,EXON,HGVSc,HGVSp,gnomAD_AF,gnomADg_AF,CADD_PHRED,Existing_variation,ClinVar,ClinVar_CLNDN,ClinVar_CLNSIG,COSMIC,Feature"
 
 	# Get number of cores/threads to use in --fork option
-	forks=$(grep -c ^processor /proc/cpuinfo)
-	echo "Number of forks: $forks"
+	echo "Number of forks: $FORKS"
 	echo "Buffer size used: $buffer_size"
 
 	# --exclude_null_allelels is used with --check-existing to prevent multiple COSMIC id's
@@ -42,22 +25,91 @@ function annotate_vep_vcf {
 	# the buffer size is chosen based on the average size of the input VCF
 
 	/usr/bin/time -v docker run -v /home/dnanexus:/opt/vep/.vep \
-	ensemblorg/ensembl-vep:release_104.3 \
+	${VEP_IMAGE_ID} \
 	./vep -i /opt/vep/.vep/"${input_vcf}" -o /opt/vep/.vep/"${output_vcf}" \
 	--vcf --cache --refseq --exclude_predicted --symbol --hgvs --af_gnomad \
 	--check_existing --variant_class --numbers \
 	--offline --exclude_null_alleles \
-	--custom /opt/vep/.vep/"${clinvar_vcf}",ClinVar,vcf,exact,0,CLNSIG,CLNREVSTAT,CLNDN \
-	--custom /opt/vep/.vep/"${cosmic_coding}",COSMIC,vcf,exact,0,ID \
-	--custom /opt/vep/.vep/"${cosmic_non_coding}",COSMIC,vcf,exact,0,ID \
-	--custom /opt/vep/.vep/"${gnomad_genome_vcf}",gnomADg,vcf,exact,0,AF,AF_AFR,AF_AMR,AF_ASJ,AF_EAS,AF_FIN,AF_NFE,AF_OTH \
-	--plugin CADD,/opt/vep/.vep/"${cadd_snv}",/opt/vep/.vep/"${cadd_indel}" \
-	--fields "$filter_fields" --buffer_size "$buffer_size" --fork "$forks" \
+	$ANNOTATION_STRING $PLUGIN_STRING \
+	 --buffer_size "$buffer_size" --fork "$FORKS" \
 	--no_stats
 }
 
+
+
+_format_annotation () {
+    # Formats the annotation part of the command given a config file
+
+	# Inputs:
+	# $1 -> input config file
+    local file=$1
+
+    ANNOTATION_STRING=""
+
+    for annotation in $(jq -c '.custom_annotations[]' "$file")
+    do
+        ANNOTATION_STRING+=" --custom "
+
+        # Get the file name using the file id and add to the command list
+        dx_file_id=$(jq -r '.resource_files[0].file_id' <<< "$annotation")
+        dx_name=$(dx describe "$dx_file_id" --json | jq -r '.name')
+        ANNOTATION_STRING+="/opt/vep/.vep/${dx_name},"
+
+        # Adds required vep arguments
+        ANNOTATION_STRING+=$(jq -j  '[
+            .name,.type,.annotation_type,.force_coordinates,(.vcf_fields // empty)
+        ] | map(tostring) | join(",")' <<< "$annotation")
+    done
+
+}
+
+
+_format_plugins () {
+    # Formats the plugin part of the command given a config file
+
+	# Inputs:
+	# $1 -> input config file
+    local file=$1
+
+    PLUGIN_STRING=""
+
+    for plugin in $(jq -c '.plugins[]' "$file")
+    do
+        # Add the required flag and name for VEP plugins
+        local plugin_name
+        plugin_name=$(jq -r '.name' <<< "$plugin")
+
+        PLUGIN_STRING+=" --plugin ${plugin_name},"
+
+        for plugin_file in $(jq -rc '.resource_files[]' <<< "$plugin");
+        do
+            local prefix
+            prefix=$(jq -j '(.prefix // empty)' <<< "$plugin_file")
+
+            # Get the file name using the file id
+            # Add it the command list
+            dx_file_id=$(jq -r '.file_id' <<< "$plugin_file")
+            dx_name=$(dx describe "$dx_file_id" --json | jq -r '.name')
+            PLUGIN_STRING+="${prefix}/opt/vep/.vep/${dx_name},"
+        done
+
+        # Check if there's additional options to append
+        if [ "$(jq -r 'has("suffix")' <<< $plugin)" = true ]
+        then
+            PLUGIN_STRING+=$(jq -r '.suffix' <<< $plugin)
+        else
+            # Remove trailing comma
+            PLUGIN_STRING="${PLUGIN_STRING%?}"
+        fi
+
+    done
+}
+
+
 main() {
 	set -e -x -v -o pipefail
+
+	FORKS=$(grep -c ^processor /proc/cpuinfo)
 
 	mark-section "downloading inputs"
 	time dx-download-all-inputs --parallel
@@ -65,11 +117,20 @@ main() {
 	# array inputs end up in subdirectories (i.e. ~/in/array-input/0/), flatten to parent dir
 	find ~/in/vep_plugins -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_plugins
 	find ~/in/vep_refs -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_refs
-	find ~/in/vep_annotation -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_annotation
 
 	# move annotation sources and input vcf to home
-	mv ~/in/vep_annotation/* /home/dnanexus/
 	mv ~/in/vcf/* /home/dnanexus/
+
+	# Download annotations
+	echo $(date +%T)
+
+	vep_files=$(jq -r '.[] | .[].resource_files[] | .file_id,  (.index_id // empty) ' "$config_file_path")
+	xargs -P"$FORKS" -n1 dx download <<< $vep_files
+
+	echo $(date +%T)
+
+	# Download plugin .pm files
+	dx download $(jq -r '.plugins[].pm_file' "$config_file_path")
 
 	mark-section "annotating"
 
@@ -92,19 +153,24 @@ main() {
 	# place plugins into plugins folder
 	mkdir ~/Plugins
 	mv ~/in/vep_plugins/* ~/Plugins/
-
+	mv ~/*.pm  ~/Plugins/
 
 	# load vep docker
 	docker load -i "$vep_docker_path"
+	VEP_IMAGE_ID=$(docker images --format="{{.Repository}} {{.ID}}" | grep "^ensemblorg" | cut -d' ' -f2)
 
-	#annotate
+	# Create annotation and plugin strings
+	_format_annotation "$config_file_path"
+	_format_plugins "$config_file_path"
+
+	# Annotate
 	output_vcf="${vcf_prefix}_annotated.vcf"
 	echo $output_vcf
-	annotate_vep_vcf "$vcf_name" "$output_vcf"
+	_annotate_vep_vcf "$vcf_name" "$output_vcf"
 
-	mark-section "uploading output"
 
 	# Upload output vcf
+	mark-section "uploading output"
 	annotated_vcf=$(dx upload $output_vcf --brief)
 	dx-jobutil-add-output annotated_vcf "$annotated_vcf" --class=file
 

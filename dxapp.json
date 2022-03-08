@@ -27,14 +27,14 @@
       "default": {
         "$dnanexus_link": {
           "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "id": "file-G6BYQP8433Gjf2j8KQ0fkvZJ"
+          "id": "file-G8V2Vz0433Gp5bYPF2f6vg9X"
         }
       },
       "suggestions": [
         {
           "name": "001_Reference",
           "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/assets/vep/vep_docker_v104.3/"
+          "path": "/assets/vep/vep_docker_v105.0/"
         }
       ]
     },
@@ -48,7 +48,7 @@
         {
           "$dnanexus_link": {
             "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYQF0433Gb7jGP4qbQx0G6"
+            "id": "file-G8V57Yj433Gfg3vF9jPq1ZFk"
           }
         }
       ],
@@ -88,7 +88,7 @@
         {
           "$dnanexus_link": {
             "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6QGkZ84YV3QZfg551QqkxQX"
+            "id": "file-G8V4bGj433Gz96K3Fb1VfbG3"
           }
         }
       ],
@@ -177,7 +177,8 @@
     "network": [
       "*"
     ],
-    "project": "VIEW"
+    "project": "CONTRIBUTE",
+    "allProjects": "VIEW"
   },
   "ignoreReuse": true
 }
