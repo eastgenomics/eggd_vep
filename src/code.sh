@@ -32,7 +32,7 @@ _annotate_vep_vcf () {
 	--offline --exclude_null_alleles \
 	$ANNOTATION_STRING $PLUGIN_STRING \
 	 --buffer_size "$buffer_size" --fork "$FORKS" \
-	--no_stats
+	--no_stats --compress_output --shift_3prime
 }
 
 
@@ -152,7 +152,7 @@ main() {
 
 	# place plugins into plugins folder
 	mkdir ~/Plugins
-	mv ~/in/vep_plugins/* ~/Plugins/
+	mv ~/in/vep_plugin_config/* ~/Plugins/
 	mv ~/*.pm  ~/Plugins/
 
 	# load vep docker
@@ -164,7 +164,7 @@ main() {
 	_format_plugins "$config_file_path"
 
 	# Annotate
-	output_vcf="${vcf_prefix}_annotated.vcf"
+	output_vcf="${vcf_prefix}_annotated.vcf.gz"
 	echo $output_vcf
 	_annotate_vep_vcf "$vcf_name" "$output_vcf"
 
