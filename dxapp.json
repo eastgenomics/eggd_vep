@@ -39,24 +39,24 @@
       ]
     },
     {
-      "name": "vep_plugins",
-      "label": "plugin files for VEP",
-      "help": "Associated plugin files for VEP",
-      "class": "array:file",
+      "name": "vep_plugin_config",
+      "label": "plugin config file for VEP",
+      "help": "Associated plugin file for VEP version used",
+      "class": "file",
+      "patterns": ["*.json"],
       "optional": false,
-      "default": [
-        {
+      "default": {
           "$dnanexus_link": {
             "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
             "id": "file-G8V57Yj433Gfg3vF9jPq1ZFk"
           }
         }
-      ],
+      ,
       "suggestions": [
         {
           "name": "001_Reference",
           "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/assets/vep/vep_docker_v104.3/"
+          "path": "/assets/vep/vep_docker_v105.0/"
         }
       ]
     },
@@ -114,6 +114,20 @@
       "help": "File describing annotation files to be used",
       "class": "file",
       "optional": false
+    },
+    {
+      "name": "panel_bed",
+      "label": "bedfile of requested panel",
+      "help": "Bedfile to filter vcf before annotating.",
+      "class": "file",
+      "optional": true
+    },
+    {
+      "name": "transcript_list",
+      "label": "List of transcripts to output",
+      "help": "List of transcripts to output",
+      "class": "file",
+      "optional": true
     }
   ],
   "outputSpec": [
