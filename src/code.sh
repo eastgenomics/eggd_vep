@@ -32,7 +32,7 @@ _annotate_vep_vcf () {
 	--offline --exclude_null_alleles \
 	$ANNOTATION_STRING $PLUGIN_STRING \
 	 --buffer_size "$buffer_size" --fork "$FORKS" \
-	--no_stats --compress_output --shift_3prime
+	--no_stats --compress_output bgzip --shift_3prime
 }
 
 
@@ -115,7 +115,6 @@ main() {
 	time dx-download-all-inputs --parallel
 
 	# array inputs end up in subdirectories (i.e. ~/in/array-input/0/), flatten to parent dir
-	find ~/in/vep_plugins -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_plugins
 	find ~/in/vep_refs -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_refs
 
 	# move annotation sources and input vcf to home
@@ -152,7 +151,7 @@ main() {
 
 	# place plugins into plugins folder
 	mkdir ~/Plugins
-	mv ~/in/vep_plugin_config/* ~/Plugins/
+	mv "$vep_plugin_config_path" ~/Plugins/
 	mv ~/*.pm  ~/Plugins/
 
 	# load vep docker
