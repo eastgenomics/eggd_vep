@@ -32,7 +32,7 @@ _annotate_vep_vcf () {
 	--offline --exclude_null_alleles \
 	$ANNOTATION_STRING $PLUGIN_STRING \
 	 --buffer_size "$buffer_size" --fork "$FORKS" \
-	--no_stats --compress_output bgzip --shift_3prime
+	--no_stats --compress_output bgzip --shift_3prime 1
 }
 
 
@@ -117,8 +117,19 @@ main() {
 	# array inputs end up in subdirectories (i.e. ~/in/array-input/0/), flatten to parent dir
 	find ~/in/vep_refs -type f -name "*" -print0 | xargs -0 -I {} mv {} ~/in/vep_refs
 
-	# move annotation sources and input vcf to home
-	mv ~/in/vcf/* /home/dnanexus/
+	# Unpack fasta reference
+	tar xzf $fasta_tar_path
+
+	# Filter by panel if provided and normalise
+	if [ "$panel_bed" ];
+	then
+		bedtools intersect -header -a "$vcf_path" -b "$panel_bed_path" \
+			| bcftools norm -f genome.fa -m -any --keep-sum AD - \
+			-o "${vcf_prefix}_filtered.vcf"
+	else
+		bcftools norm -f genome.fa -m -any --keep-sum AD  \
+			"$vcf_path" -o "${vcf_prefix}_filtered.vcf"
+	fi
 
 	# Download annotations
 	echo $(date +%T)
@@ -165,7 +176,7 @@ main() {
 	# Annotate
 	output_vcf="${vcf_prefix}_annotated.vcf.gz"
 	echo $output_vcf
-	_annotate_vep_vcf "$vcf_name" "$output_vcf"
+	_annotate_vep_vcf "${vcf_prefix}_filtered.vcf" "$output_vcf"
 
 
 	# Upload output vcf

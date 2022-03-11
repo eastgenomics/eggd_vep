@@ -128,6 +128,20 @@
       "help": "List of transcripts to output",
       "class": "file",
       "optional": true
+    },
+    {
+      "name": "fasta_tar",
+      "label": "Reference genome fasta and index",
+      "class": "file",
+      "optional": false,
+      "patterns": ["*.fasta-index.tar.gz"],
+      "help": "tar.gz containing genome.fa and genome.fa.fai. Must match reference genome build used.",
+      "default":{
+          "$dnanexus_link": {
+            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+            "id": "file-F3zxG0Q4fXX9YFjP1v5jK9jf"
+          }
+        }
     }
   ],
   "outputSpec": [
@@ -150,7 +164,20 @@
     "release": "20.04",
     "version": "0",
     "file": "src/code.sh",
-    "assetDepends": []
+    "assetDepends": [
+      {
+        "name": "bedtools",
+        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+        "folder": "/app_assets/bedtools/bedtools_v2.30.0",
+        "version": "2.30.0"
+      },
+      {
+        "name": "htslib",
+        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+        "folder": "/app_assets/htslib/htslib_v1.15.0",
+        "version": "1.15.0"
+      }
+    ]
   },
   "developers":[
     "user-toutoua",
