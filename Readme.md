@@ -2,11 +2,12 @@
 
 ## What does this app do?
 
-Annotates a vcf using [Variant Effect Predictor](https://github.com/Ensembl/ensembl-vep). Default docker image used v104.3.
+Annotates a vcf using [Variant Effect Predictor](https://github.com/Ensembl/ensembl-vep). Default docker image used v105.0.
 
 ## What are typical use cases for this app?
 This app was designed to annotate vcfs with specified fields based on provided annotation.
 
+A variable level of annotation can be achiever by different combinations of custom annotation , vep plugins in addition to the required VEP cache annotation bundle.
 
 ## What data are required for this app to run?
 - An input vcf to annotate
@@ -66,9 +67,9 @@ __This app uses the follow tools which are app assets:__
 ## What are the optional inputs for this app?
 - buffer_size [default = 500] : to allow for parallelisation the app recognised the instance type and splits annotation in the amount of available cores. The buffer size is the amount of variants VEP will annotate per core.
 
-> For larger vcfs please consider about the appropriate  instance type and buffer size to use.
+> For larger vcfs please consider about the appropriate instance type and buffer size to use.
 ## What does this app output?
-- Annotated vcf with the specified fields mentioned above.
+- Annotated vcf.
 
 ## Notes
 - Designed to be used as part of Helios workflow for processing Solid Cancer data for GRCh37 so all defaults are based on that.
