@@ -18,89 +18,6 @@
       "optional": false
     },
     {
-      "name": "vep_docker",
-      "label": "VEP docker image",
-      "help": "compressed docker image of VEP",
-      "class": "file",
-      "patterns": ["*.tar.gz"],
-      "optional": false,
-      "default": {
-        "$dnanexus_link": {
-          "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "id": "file-G8V2Vz0433Gp5bYPF2f6vg9X"
-        }
-      },
-      "suggestions": [
-        {
-          "name": "001_Reference",
-          "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/assets/vep/vep_docker_v105.0/"
-        }
-      ]
-    },
-    {
-      "name": "vep_plugin_config",
-      "label": "plugin config file for VEP",
-      "help": "Associated plugin file for VEP version used",
-      "class": "file",
-      "patterns": ["*.json"],
-      "optional": false,
-      "default": {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G8V57Yj433Gfg3vF9jPq1ZFk"
-          }
-        }
-      ,
-      "suggestions": [
-        {
-          "name": "001_Reference",
-          "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/assets/vep/vep_docker_v105.0/"
-        }
-      ]
-    },
-    {
-      "name": "vep_refs",
-      "label": "reference sources for VEP",
-      "help": "Reference file annotation sources required for VEP",
-      "class": "array:file",
-      "optional": false,
-      "default": [
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYyyj4YV3pYBkgFVGP2K4P"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6P32kj4YV3y58KyP4k4qG2p"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYz104YV3X5qp463K5b5vp"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G8V4bGj433Gz96K3Fb1VfbG3"
-          }
-        }
-      ],
-      "suggestions": [
-        {
-          "name": "001_Reference",
-          "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/annotation/b37/vep/"
-        }
-      ]
-    },
-    {
       "name": "buffer_size",
       "label": "Number of variants to annotate",
       "help": "To make annotating more efficient, the number of variants to annotate can chosen. Default is 500 but can be tweaked for bigger files.",
@@ -124,24 +41,10 @@
     },
     {
       "name": "transcript_list",
-      "label": "List of transcripts to output",
-      "help": "List of transcripts to output",
+      "label": "List of transcripts to output after annotation.",
+      "help": "List of transcripts to output. One transcript per row.",
       "class": "file",
       "optional": true
-    },
-    {
-      "name": "fasta_tar",
-      "label": "Reference genome fasta and index",
-      "class": "file",
-      "optional": false,
-      "patterns": ["*.fasta-index.tar.gz"],
-      "help": "tar.gz containing genome.fa and genome.fa.fai. Must match reference genome build used.",
-      "default":{
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-F3zxG0Q4fXX9YFjP1v5jK9jf"
-          }
-        }
     }
   ],
   "outputSpec": [
