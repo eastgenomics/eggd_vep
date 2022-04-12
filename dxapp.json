@@ -60,7 +60,7 @@
     "interpreter": "bash",
     "timeoutPolicy": {
       "*": {
-        "hours": 6
+        "hours": 2
       }
     },
     "distribution": "Ubuntu",
