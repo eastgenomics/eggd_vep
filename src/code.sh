@@ -134,15 +134,19 @@ _format_plugins () {
 
 
 main() {
-	set -e -x -v -o pipefail
 
+	# Output each line as it is executed (-x) and stop if any non zero exit codes are seen (-e)
+	set -exo pipefail
+
+	# Get available number of cores to allow parallelisation
 	FORKS=$(grep -c ^processor /proc/cpuinfo)
 
 	mark-section "downloading inputs"
-	time dx-download-all-inputs --parallel
+	dx-download-all-inputs --parallel
 
 	# Print Config information to logs:
 	jq -r '.config_information | to_entries | .[] | .key + ": " + (.value )' "$config_file_path"
+
 	# Download vep resources
 	vep_refs=$(jq -r '.vep_resources | .[]' "$config_file_path")
 	xargs -P"$FORKS" -n1 dx download <<< $vep_refs
@@ -151,12 +155,13 @@ main() {
 	# Creates variables storing the name of vep_resources
 	# i.e. vep_docker=vep_v105.0.tar.gz which makes the name accessible further down
 	eval $(jq -r '.vep_resources
-		| to_entries | .[] 
+		| to_entries | .[]
 		| .key + "=$(dx describe --json " + (.value )+"
 		| jq -r '.name')" ' "$config_file_path")
 
 
-	# Download annotation files
+	# Download annotation files as requested in the config
+	# Time file download for the logs
 	echo $(date +%T)
 
 	vep_files=$(jq -r '.custom_annotations,.plugins | .[].resource_files[] | .file_id,  (.index_id // empty) ' "$config_file_path")
@@ -164,11 +169,12 @@ main() {
 
 	echo $(date +%T)
 
-	# Download plugin .pm files
+	# Download plugin .pm files if plugins required
 	if [[ ! -z $(jq '.plugins[].pm_file' "$config_file_path") ]];
 	then
 		dx download $(jq -r '.plugins[].pm_file' "$config_file_path")
-			# place plugins into plugins folder
+
+		# Place plugins into plugins folder
 		mkdir ~/Plugins
 		mv ~/$plugin_config ~/Plugins/
 		mv ~/*.pm ~/Plugins/
@@ -179,15 +185,21 @@ main() {
 	mark-section "pre-annotation filtering & normalisation"
 
 	# Unpack fasta reference
-	#fasta_tar=$(dx describe $(jq -r '.vep_resources | .' vep_testing_config_v0.0.json) --json | jq -r '.name')
 	tar xzf $ref_bcftools
 
 	# Filter by panel if provided and normalise
 	if [ "$panel_bed" ];
 	then
+		# Create a new header to add the bedtools intersect command with the panel name
+		bcftools view -h "${vcf_path}" | head -n -3 > header.txt
+		echo '##bedtools intersect' "$vcf_name" "$panel_bed" >> header.txt
+		bcftools view -h "${vcf_path}" | tail -n 1 >> header.txt
+
+		# Intersect with panel, normalise and reheader
 		bedtools intersect -header -a "$vcf_path" -b "$panel_bed_path" \
 			| bcftools norm -f genome.fa -m -any --keep-sum AD - \
-			-o "${vcf_prefix}_normalised.vcf"
+			| bcftools reheader -h header.txt -o "${vcf_prefix}_normalised.vcf" -
+
 	else
 		bcftools norm -f genome.fa -m -any --keep-sum AD "$vcf_path"  \
 		-o "${vcf_prefix}_normalised.vcf"
@@ -208,10 +220,10 @@ main() {
 
 	mark-section "annotating"
 
-	# vep needs permissions to write to /home/dnanexus
+	# VEP needs permissions to write to /home/dnanexus
 	chmod a+rwx /home/dnanexus
 
-	# extract vep reference annotation tarball to /home/dnanexus
+	# Extract vep reference annotation tarball to /home/dnanexus
 	time tar xf $vep_cache -C /home/dnanexus
 
 	# Place fasta and indexes for VEP in the annotation folder
@@ -224,8 +236,9 @@ main() {
 	echo "$cache_path"
 	mv /home/dnanexus/*fa.gz* ~/"${cache_path}"
 
-	# load vep docker
+	# Load VEP docker
 	docker load -i "$vep_docker"
+	# Get image id of the loaded docker
 	VEP_IMAGE_ID=$(docker images --format="{{.Repository}} {{.ID}}" | grep "^ensemblorg" | cut -d' ' -f2)
 
 	# Create annotation and plugin strings
@@ -237,7 +250,7 @@ main() {
 	echo $annotated_vcf
 	_annotate_vep_vcf "${vcf_prefix}_temp.vcf" "$annotated_vcf"
 
-	# Filter vcf by chosen transcript
+	# Filter vcf by chosen transcript(s)
 	output_vcf="${vcf_prefix}_annotated.vcf"
 
 	if [ "$panel_bed" ];
