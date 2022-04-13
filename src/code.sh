@@ -55,8 +55,15 @@ _filter_vep_vcf () {
 	# Create string filter with NM ids an no version
 	# VEP expects Feature match <transcript_id> to match partially
 	# Separate transcript separated by an "or"
+
+	# Don't output the commands for this loop, if it  is a big panel it just floods the logs
+	set +x
 	transcript_list=$(for tr in $(less $transcripts);do echo -n "Feature match $tr\. or ";done)
 
+	# Reset set
+	set -x
+
+	# Run vep_filter, "${transcript_list%????}" removes the last 4 characters which are not used
 	/usr/bin/time -v docker run -v /home/dnanexus:/opt/vep/.vep \
 	${VEP_IMAGE_ID}  \
 	./filter_vep -i /opt/vep/.vep/"$input_vcf" \
@@ -252,6 +259,7 @@ main() {
 
 	# Filter vcf by chosen transcript(s)
 	output_vcf="${vcf_prefix}_annotated.vcf"
+
 
 	if [ "$panel_bed" ];
 	then
