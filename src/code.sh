@@ -192,7 +192,7 @@ main() {
 	then
 		# Create a new header to add the bedtools intersect command with the panel name
 		bcftools view -h "${vcf_path}" | head -n -3 > header.txt
-		echo '##bedtools intersect' "$vcf_name" "$panel_bed" >> header.txt
+		echo '##bedtools intersect' "$vcf_name" "$panel_bed_name" >> header.txt
 		bcftools view -h "${vcf_path}" | tail -n 1 >> header.txt
 
 		# Intersect with panel, normalise and reheader

@@ -114,7 +114,7 @@
       }
     ],
     "contactEmail": "East GLH Bioinformatics",
-    "whatsNew": "* 1.0.0 First release of VEP app (forked from vcf handler for Uranus and then stripped down)\n"
+    "whatsNew": "* 1.0.0 First release of VEP app with modular annotation inputs.\n"
   },
   "categories": [],
   "access": {
