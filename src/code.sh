@@ -12,9 +12,10 @@ _annotate_vep_vcf () {
 	input_vcf="$1"
 	output_vcf="$2"
 
-	# fields to annotate with.
+	# Extract VEP required fields to annotate with.
 
-	fields="SYMBOL,VARIANT_CLASS,Consequence,EXON,HGVSc,HGVSp,gnomAD_AF,Existing_variation,Feature"
+	fields=$(jq -r '.additional_fields | map(tostring) | join(",")' "$config_file_path" )
+
 	for entry in $(jq -r '.custom_annotations,.plugins| .[].required_fields' "$config_file_path" );
 	do
 		fields+=','$entry;
