@@ -30,6 +30,7 @@
       "label": "Configuration file stating the annotation sources to be used",
       "help": "File describing annotation files to be used",
       "class": "file",
+      "patterns": ["*json"],
       "optional": false
     },
     {
@@ -37,12 +38,13 @@
       "label": "bedfile of requested panel",
       "help": "Bedfile to filter vcf before annotating.",
       "class": "file",
+      "patterns": ["*bed"],
       "optional": true
     },
     {
       "name": "transcript_list",
       "label": "List of transcripts to output after annotation.",
-      "help": "List of transcripts to output. One transcript per row.",
+      "help": "List of transcripts to output. One transcript per row. If given VEP filters annotated output with given transcript list.",
       "class": "file",
       "optional": true
     }

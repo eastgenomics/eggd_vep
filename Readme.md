@@ -78,7 +78,7 @@ A variable level of annotation can be achieved by different combinations of cust
 ## What are the optional inputs for this app?
 - Amount of variants VEP will annotate per core(`buffer_size`) [default = 500] : to allow for parallelisation the app recognised the instance type and splits annotation in the amount of available cores.
 - A panel bed file to filter the vcf on (`panel_bed`)
-- A list of transcripts to filter on (`transcript_list`). One transcript per line.
+- A list of transcripts to filter on (`transcript_list`). One transcript per line. VEP annotates with all possible transcripts and if this list is passed it filters on the given transcript list.
 
 __This app uses the follow tools which are app assets:__
 * htslib (v1.14)
