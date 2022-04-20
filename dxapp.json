@@ -18,189 +18,35 @@
       "optional": false
     },
     {
-      "name": "vep_docker",
-      "label": "VEP docker image",
-      "help": "compressed docker image of VEP",
-      "class": "file",
-      "patterns": ["*.tar.gz"],
-      "optional": false,
-      "default": {
-        "$dnanexus_link": {
-          "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "id": "file-G6BYQP8433Gjf2j8KQ0fkvZJ"
-        }
-      },
-      "suggestions": [
-        {
-          "name": "001_Reference",
-          "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/assets/vep/vep_docker_v104.3/"
-        }
-      ]
-    },
-    {
-      "name": "vep_plugins",
-      "label": "plugin files for VEP",
-      "help": "Associated plugin files for VEP",
-      "class": "array:file",
-      "optional": false,
-      "default": [
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYQGQ433Gg0KfZF5xPfv1X"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYQF0433Gb7jGP4qbQx0G6"
-          }
-        }
-      ],
-      "suggestions": [
-        {
-          "name": "001_Reference",
-          "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/assets/vep/vep_docker_v104.3/"
-        }
-      ]
-    },
-    {
-      "name": "vep_refs",
-      "label": "reference sources for VEP",
-      "help": "Reference file annotation sources required for VEP",
-      "class": "array:file",
-      "optional": false,
-      "default": [
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYyyj4YV3pYBkgFVGP2K4P"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6P32kj4YV3y58KyP4k4qG2p"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYz104YV3X5qp463K5b5vp"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6QGkZ84YV3QZfg551QqkxQX"
-          }
-        }
-      ],
-      "suggestions": [
-        {
-          "name": "001_Reference",
-          "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/annotation/b37/vep/"
-        }
-      ]
-    },
-    {
-      "name": "vep_annotation",
-      "label": "annotation sources for VEP",
-      "help": "Reference file annotation sources for VEP and index (ClinVar,CADD, COSMIC, gnomad)",
-      "class": "array:file",
-      "optional": false,
-      "default": [
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G5KjGZ84YV3xFfv221vJQjQZ"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G5KjKf84YV3y39z97vbXJ60b"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYB5Q433GvQGgF58976p7J"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BYB8j433GyJ3f13z8GB4ZV"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BY8X0433GbVBG06pFPvjp7"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BY8Pj433GjPF7j6kK5QZ75"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BZ9Pj433GbJPBq21XB939z"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6BZ9JQ433GgPPj2Jy5jpvkJ"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6P4Q50433GQGqgg17ggGX27"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6P4QK8433GppBFv57QBQB2J"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6KV6Pj433GkBBF398p6XQXv"
-          }
-        },
-        {
-          "$dnanexus_link": {
-            "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-            "id": "file-G6P4QVj433Gk5FbKB11JPG6K"
-          }
-        }
-      ],
-      "suggestions": [
-        {
-          "name": "001_Reference",
-          "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
-          "path": "/annotation/b37/"
-        }
-      ]
-    },
-    {
       "name": "buffer_size",
       "label": "Number of variants to annotate",
-      "help": "To make annoating  more efficient, the number of variants to annotate can chosen. Default is 500 but can be tweaked for bigger files.",
+      "help": "To make annotating more efficient, the number of variants to annotate can chosen. Default is 500 but can be tweaked for bigger files.",
       "class": "int",
       "optional": true,
       "default": 500
+    },
+    {
+      "name": "config_file",
+      "label": "Configuration file stating the annotation sources to be used",
+      "help": "File describing annotation files to be used",
+      "class": "file",
+      "patterns": ["*json"],
+      "optional": false
+    },
+    {
+      "name": "panel_bed",
+      "label": "bedfile of requested panel",
+      "help": "Bedfile to filter vcf before annotating.",
+      "class": "file",
+      "patterns": ["*bed"],
+      "optional": true
+    },
+    {
+      "name": "transcript_list",
+      "label": "List of transcripts to output after annotation.",
+      "help": "List of transcripts to output. One transcript per row. If given VEP filters annotated output with given transcript list.",
+      "class": "file",
+      "optional": true
     }
   ],
   "outputSpec": [
@@ -216,14 +62,27 @@
     "interpreter": "bash",
     "timeoutPolicy": {
       "*": {
-        "hours": 6
+        "hours": 2
       }
     },
     "distribution": "Ubuntu",
     "release": "20.04",
     "version": "0",
     "file": "src/code.sh",
-    "assetDepends": []
+    "assetDepends": [
+      {
+        "name": "bedtools",
+        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+        "folder": "/app_assets/bedtools/bedtools_v2.30.0",
+        "version": "2.30.0"
+      },
+      {
+        "name": "htslib",
+        "project": "project-Fkb6Gkj433GVVvj73J7x8KbV",
+        "folder": "/app_assets/htslib/htslib_v1.15.0",
+        "version": "1.15.0"
+      }
+    ]
   },
   "developers":[
     "user-toutoua",
@@ -236,7 +95,7 @@
     "aws:eu-central-1": {
       "systemRequirements": {
         "*": {
-          "instanceType": "mem1_ssd2_v2_x4"
+          "instanceType": "mem1_ssd1_v2_x16"
         }
       }
     }
@@ -257,14 +116,15 @@
       }
     ],
     "contactEmail": "East GLH Bioinformatics",
-    "whatsNew": "* 1.0.0 First release of VEP app (forked from vcf handler for Uranus and then stripped down)\n"
+    "whatsNew": "* 1.0.0 First release of VEP app with modular annotation inputs.\n"
   },
   "categories": [],
   "access": {
     "network": [
       "*"
     ],
-    "project": "VIEW"
+    "project": "CONTRIBUTE",
+    "allProjects": "VIEW"
   },
   "ignoreReuse": true
 }
