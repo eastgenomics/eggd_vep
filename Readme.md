@@ -91,4 +91,4 @@ __This app uses the follow tools which are app assets:__
 - Annotated (and filtered if requested) vcf.
 
 ## Notes
-- This app uses a buffer_size of 500 variants and parallelised the maximum number of cores available.As a default this app runs using mem1_ssd1_v2_x16 which translates to 16 cores. This was chosen with the to speed up set up.
+- This app uses a buffer_size of 500 variants and parallelised the maximum number of cores available.As a default this app runs using mem1_ssd1_v2_x16 which translates to 16 cores. This was chosen to speed up set up.
