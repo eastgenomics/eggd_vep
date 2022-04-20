@@ -204,7 +204,7 @@ main() {
 		bcftools view -h "${vcf_path}" | tail -n 1 >> header.txt
 
 		# Intersect with panel, normalise and reheader
-		bedtools intersect -header -a "$vcf_path" -b "$panel_bed_path" \
+		bedtools intersect -header -u -a "$vcf_path" -b "$panel_bed_path" \
 			| bcftools norm -f genome.fa -m -any --keep-sum AD - \
 			| bcftools reheader -h header.txt -o "${vcf_prefix}_normalised.vcf" -
 
