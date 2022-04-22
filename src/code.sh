@@ -173,7 +173,14 @@ main() {
 	echo $(date +%T)
 
 	vep_files=$(jq -r '.custom_annotations,.plugins | .[].resource_files[] | .file_id,  (.index_id // empty) ' "$config_file_path")
-	xargs -P"$FORKS" -n1 dx download <<< $vep_files
+
+	# Check if vep_files is empty and skip download
+	if [[ ! -z $vep_files ]];
+	then
+		xargs -P"$FORKS" -n1 dx download <<< $vep_files
+	else
+		echo "No plugins or custom annotation passed."
+	fi
 
 	echo $(date +%T)
 
