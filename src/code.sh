@@ -32,7 +32,7 @@ _annotate_vep_vcf () {
 	/usr/bin/time -v docker run -v /home/dnanexus:/opt/vep/.vep \
 	${VEP_IMAGE_ID} \
 	./vep -i /opt/vep/.vep/"${input_vcf}" -o /opt/vep/.vep/"${output_vcf}" \
-	--vcf --cache --refseq --exclude_predicted --symbol --hgvs --af_gnomad \
+	--vcf --cache --refseq --exclude_predicted --symbol --hgvs \
 	--check_existing --variant_class --numbers \
 	--offline --exclude_null_alleles \
 	$ANNOTATION_STRING $PLUGIN_STRING --fields "$fields" \
