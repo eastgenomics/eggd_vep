@@ -12,8 +12,10 @@ _annotate_vep_vcf () {
 	input_vcf="$1"
 	output_vcf="$2"
 
-	# Extract VEP required fields to annotate with.
+	# Extract assembly string from config to enable plugins
+	assembly_string=$(jq -r ' .config_information.genome_build' "$config_file_path")
 
+	# Extract VEP required fields to annotate with.
 	fields=$(jq -r '.additional_fields | map(tostring) | join(",")' "$config_file_path" )
 
 	for entry in $(jq -r '.custom_annotations,.plugins| .[].required_fields' "$config_file_path" );
@@ -34,7 +36,7 @@ _annotate_vep_vcf () {
 	./vep -i /opt/vep/.vep/"${input_vcf}" -o /opt/vep/.vep/"${output_vcf}" \
 	--vcf --cache --refseq --exclude_predicted --symbol --hgvs \
 	--check_existing --variant_class --numbers \
-	--offline --exclude_null_alleles \
+	--offline --exclude_null_alleles --assembly "$assembly_string"\
 	$ANNOTATION_STRING $PLUGIN_STRING --fields "$fields" \
 	 --buffer_size "$buffer_size" --fork "$FORKS" \
 	--no_stats --compress_output bgzip --shift_3prime 1
@@ -207,13 +209,13 @@ main() {
 	then
 		# Create a new header to add the bedtools intersect command with the panel name
 		bcftools view -h "${vcf_path}" | head -n -3 > header.txt
-		echo '##bedtools intersect' "$vcf_name" "$panel_bed_name" >> header.txt
+		echo '##bedtools_command=bedtools intersect' "$vcf_name" "$panel_bed_name" >> header.txt
 		bcftools view -h "${vcf_path}" | tail -n 1 >> header.txt
 
 		# Intersect with panel, normalise and reheader
 		bedtools intersect -header -u -a "$vcf_path" -b "$panel_bed_path" \
-			| bcftools norm -f genome.fa -m -any --keep-sum AD - \
-			| bcftools reheader -h header.txt -o "${vcf_prefix}_normalised.vcf" -
+			| bcftools reheader -h header.txt  - \
+			| bcftools norm -f genome.fa -m -any --keep-sum AD -o "${vcf_prefix}_normalised.vcf" -
 
 	else
 		bcftools norm -f genome.fa -m -any --keep-sum AD "$vcf_path"  \
