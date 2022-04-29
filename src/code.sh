@@ -214,8 +214,8 @@ main() {
 
 		# Intersect with panel, normalise and reheader
 		bedtools intersect -header -u -a "$vcf_path" -b "$panel_bed_path" \
-			| bcftools norm -f genome.fa -m -any --keep-sum AD - \
-			| bcftools reheader -h header.txt -o "${vcf_prefix}_normalised.vcf" -
+			| bcftools reheader -h header.txt  - \
+			| bcftools norm -f genome.fa -m -any --keep-sum AD -o "${vcf_prefix}_normalised.vcf" -
 
 	else
 		bcftools norm -f genome.fa -m -any --keep-sum AD "$vcf_path"  \
