@@ -12,8 +12,10 @@ _annotate_vep_vcf () {
 	input_vcf="$1"
 	output_vcf="$2"
 
-	# Extract VEP required fields to annotate with.
+	# Extract assembly string from config to enable plugins
+	assembly_string=$(jq -r ' .config_information.genome_build' "$config_file_path")
 
+	# Extract VEP required fields to annotate with.
 	fields=$(jq -r '.additional_fields | map(tostring) | join(",")' "$config_file_path" )
 
 	for entry in $(jq -r '.custom_annotations,.plugins| .[].required_fields' "$config_file_path" );
@@ -34,7 +36,7 @@ _annotate_vep_vcf () {
 	./vep -i /opt/vep/.vep/"${input_vcf}" -o /opt/vep/.vep/"${output_vcf}" \
 	--vcf --cache --refseq --exclude_predicted --symbol --hgvs \
 	--check_existing --variant_class --numbers \
-	--offline --exclude_null_alleles \
+	--offline --exclude_null_alleles --assembly "$assembly_string"\
 	$ANNOTATION_STRING $PLUGIN_STRING --fields "$fields" \
 	 --buffer_size "$buffer_size" --fork "$FORKS" \
 	--no_stats --compress_output bgzip --shift_3prime 1
