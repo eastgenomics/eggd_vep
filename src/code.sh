@@ -35,10 +35,10 @@ _annotate_vep_vcf () {
 	${VEP_IMAGE_ID} \
 	./vep -i /opt/vep/.vep/"${input_vcf}" -o /opt/vep/.vep/"${output_vcf}" \
 	--vcf --cache --refseq --exclude_predicted --symbol --hgvs \
-	--check_existing --variant_class --numbers --format vcf\
-	--offline --exclude_null_alleles --assembly "$assembly_string"\
+	--check_existing --variant_class --numbers --format vcf \
+	--offline --exclude_null_alleles --assembly "$assembly_string" \
 	$ANNOTATION_STRING $PLUGIN_STRING --fields "$fields" \
-	 --buffer_size "$buffer_size" --fork "$FORKS" \
+	--buffer_size "$buffer_size" --fork "$FORKS" \
 	--no_stats --compress_output bgzip --shift_3prime 1
 }
 
