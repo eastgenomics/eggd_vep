@@ -1,6 +1,6 @@
 {
-  "name": "eggd_vep",
-  "title": "eggd_vep",
+  "name": "eggd_vep_CNV_dev",
+  "title": "eggd_vep_CNV_dev",
   "summary": "Annotates and filters VCF files",
   "properties": {
     "githubRelease": "1.0.0"
@@ -22,8 +22,8 @@
       "label": "Number of variants to annotate",
       "help": "To make annotating more efficient, the number of variants to annotate can chosen. Default is 500 but can be tweaked for bigger files.",
       "class": "int",
-      "optional": true,
-      "default": 500
+      "default": 500,
+      "optional": true
     },
     {
       "name": "config_file",
@@ -46,6 +46,22 @@
       "label": "List of transcripts to output after annotation.",
       "help": "List of transcripts to output. One transcript per row. If given VEP filters annotated output with given transcript list.",
       "class": "file",
+      "optional": true
+    },
+    {
+      "name": "toNormalise",
+      "label": "whether to normalise variants in VCF",
+      "help": "should NOT be used with CNV vcfs",
+      "class": "boolean",
+      "default": true,
+      "optional": true
+    },
+    {
+      "name": "toCompress",
+      "label": "whether to compress output file",
+      "help": "output an annotated VCF or vcf.gz",
+      "class": "boolean",
+      "default": true,
       "optional": true
     }
   ],
