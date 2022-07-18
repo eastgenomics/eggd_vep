@@ -221,6 +221,9 @@ main() {
 	fi
 
 	# Normalise variants, if applicable
+	# Normalisation is a default option for this app, should only be changed
+	# when running for non-SNV vcfs.
+
     if $toNormalise;
 	then
 		bcftools norm -f genome.fa -m -any --keep-sum AD  "${vcf_prefix}_filtered.vcf" -o "${vcf_prefix}_post_filtering.vcf"
