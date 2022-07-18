@@ -1,9 +1,9 @@
 {
-  "name": "eggd_vep_CNV_dev",
+  "name": "eggd_vep",
   "title": "eggd_vep_CNV_dev",
   "summary": "Annotates and filters VCF files",
   "properties": {
-    "githubRelease": "1.0.0"
+    "githubRelease": "1.0.1"
   },
   "dxapi": "1.0.0",
   "openSource": true,
@@ -50,16 +50,8 @@
     },
     {
       "name": "toNormalise",
-      "label": "whether to normalise variants in VCF",
-      "help": "should NOT be used with CNV vcfs",
-      "class": "boolean",
-      "default": true,
-      "optional": true
-    },
-    {
-      "name": "toCompress",
-      "label": "whether to compress output file",
-      "help": "output an annotated VCF or vcf.gz",
+      "label": "Optional flag dictating whether to normalise input VCF",
+      "help": "Default is true but should NOT be used with CNV vcfs",
       "class": "boolean",
       "default": true,
       "optional": true
@@ -101,7 +93,6 @@
     ]
   },
   "developers":[
-    "user-toutoua",
     "org-emee_1"
   ],
   "authorizedUsers": [
