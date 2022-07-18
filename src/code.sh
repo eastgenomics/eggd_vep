@@ -217,7 +217,7 @@ main() {
 
 	else
 		echo "No filtering was applied"
-		cp "${vcf_path}" "${vcf_prefix}_filtered.vcf"
+		mv "${vcf_path}" "${vcf_prefix}_filtered.vcf"
 	fi
 
 	# Normalise variants, if applicable
