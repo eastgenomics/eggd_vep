@@ -79,6 +79,7 @@ A variable level of annotation can be achieved by different combinations of cust
 - Amount of variants VEP will annotate per core(`buffer_size`) [default = 500] : to allow for parallelisation the app recognises the instance type and splits annotation in the amount of available cores.
 - A panel bed file to filter the vcf on (`panel_bed`)
 - A list of transcripts to filter on (`transcript_list`). One transcript per line. VEP annotates with all possible transcripts and if this list is passed it filters on the given transcript list.
+- A boolean flag of whether to normalise the input vcf or not (`normalise`) [ default=true ].
 
 __This app uses the following tools which are app assets:__
 * htslib (v1.14)
@@ -92,3 +93,4 @@ __This app uses the following tools which are app assets:__
 
 ## Notes
 - This app uses a buffer_size of 500 variants and parallelised the maximum number of cores available. As a default, this app runs using mem1_ssd1_v2_x16 which translates to 16 cores. This was chosen to speed up set up.
+- The default behaviour of this app is to normalise the input vcf as all default annotation used is also normalised to be able to appropriately compare and annotate the vcf. The `normalise` option was built to ensure compatibility with copy-number vcfs which do not require normalisation.
