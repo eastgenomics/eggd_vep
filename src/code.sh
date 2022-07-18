@@ -198,7 +198,7 @@ main() {
 		echo "No plugin files found."
 	fi
 
-	mark-section "pre-annotation filtering & normalisation"
+	mark-section "pre-annotation filtering (& normalisation)"
 
 	# Unpack fasta reference
 	tar xzf $ref_bcftools
@@ -223,11 +223,11 @@ main() {
 	# Normalise variants, if applicable
     if $toNormalise;
 	then
-		bcftools norm -f genome.fa -m -any --keep-sum AD -o "${vcf_prefix}_normalised.vcf" "${vcf_prefix}_filtered.vcf"
+		bcftools norm -f genome.fa -m -any --keep-sum AD  "${vcf_prefix}_filtered.vcf" -o "${vcf_prefix}_post_filtering.vcf"
 
 	else
 		echo "No normalisation was applied"
-		mv "${vcf_prefix}_filtered.vcf" "${vcf_prefix}_normalised.vcf"
+		mv "${vcf_prefix}_filtered.vcf" "${vcf_prefix}_post_filtering.vcf"
 	fi
 
 	# If hard filters are passed in the config apply them.
@@ -237,10 +237,10 @@ main() {
 	if test -z "$filter_command" || [ $filter_command == "null" ]
 	then
 		echo "No filtering commands passed."
-		mv "${vcf_prefix}_normalised.vcf" "${vcf_prefix}_temp.vcf"
+		mv "${vcf_prefix}_post_filtering.vcf" "${vcf_prefix}_temp.vcf"
 	else
 		echo "Filter commands passed: $filter_command"
-		eval $(echo ${filter_command} "${vcf_prefix}_normalised.vcf" -o "${vcf_prefix}_temp.vcf")
+		eval $(echo ${filter_command} "${vcf_prefix}_post_filtering.vcf" -o "${vcf_prefix}_temp.vcf")
 	fi
 
 	mark-section "annotating"
