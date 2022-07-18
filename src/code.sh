@@ -299,17 +299,9 @@ main() {
 		mv "${vcf_prefix}_temp_annotated.vcf.gz" "${output_vcf}.gz"
 	fi
 
-	# Compress output file, if requested
-    if ! $toCompress;
-	then
-		gzip -d "${output_vcf}.gz"
-		annotated_vcf=$(dx upload ${output_vcf} --brief)
-	else
-		annotated_vcf=$(dx upload "${output_vcf}.gz" --brief)
-	fi
-
 	# Upload output vcf
 	mark-section "uploading output"
+	annotated_vcf=$(dx upload "${output_vcf}.gz" --brief)
 	dx-jobutil-add-output annotated_vcf "$annotated_vcf" --class=file
 
 	mark-success
