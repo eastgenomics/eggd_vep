@@ -34,11 +34,11 @@ _annotate_vep_vcf () {
 	/usr/bin/time -v docker run -v /home/dnanexus:/opt/vep/.vep \
 	${VEP_IMAGE_ID} \
 	./vep -i /opt/vep/.vep/"${input_vcf}" -o /opt/vep/.vep/"${output_vcf}" \
-	--vcf --cache --refseq --exclude_predicted --symbol --hgvs \
-	--check_existing --variant_class --numbers --format vcf\
-	--offline --exclude_null_alleles --assembly "$assembly_string"\
+	--vcf --cache --refseq --exclude_predicted --symbol --hgvs --hgvsg \
+	--check_existing --variant_class --numbers --format vcf \
+	--offline --exclude_null_alleles --assembly "$assembly_string" \
 	$ANNOTATION_STRING $PLUGIN_STRING --fields "$fields" \
-	 --buffer_size "$buffer_size" --fork "$FORKS" \
+	--buffer_size "$buffer_size" --fork "$FORKS" \
 	--no_stats --compress_output bgzip --shift_3prime 1
 }
 
@@ -59,7 +59,7 @@ _filter_vep_vcf () {
 	# VEP expects Feature match <transcript_id> to match partially
 	# Separate transcript separated by an "or"
 
-	# Don't output the commands for this loop, if it  is a big panel it just floods the logs
+	# Don't output the commands for this loop, if it is a big panel it just floods the logs
 	set +x
 	transcript_list=$(for tr in $(less $transcripts);do echo -n "Feature match $tr\. or ";done)
 
@@ -99,7 +99,6 @@ _format_annotation () {
     done
 
 }
-
 
 _format_plugins () {
     # Formats the plugin part of the command given a config file
@@ -199,12 +198,12 @@ main() {
 		echo "No plugin files found."
 	fi
 
-	mark-section "pre-annotation filtering & normalisation"
+	mark-section "pre-annotation filtering (& normalisation)"
 
 	# Unpack fasta reference
 	tar xzf $ref_bcftools
 
-	# Filter by panel if provided and normalise
+	# Filter by panel if provided
 	if [ "$panel_bed" ];
 	then
 		# Create a new header to add the bedtools intersect command with the panel name
@@ -214,12 +213,24 @@ main() {
 
 		# Intersect with panel, normalise and reheader
 		bedtools intersect -header -u -a "$vcf_path" -b "$panel_bed_path" \
-			| bcftools reheader -h header.txt  - \
-			| bcftools norm -f genome.fa -m -any --keep-sum AD -o "${vcf_prefix}_normalised.vcf" -
+			| bcftools reheader -h header.txt -o "${vcf_prefix}_filtered.vcf"
 
 	else
-		bcftools norm -f genome.fa -m -any --keep-sum AD "$vcf_path"  \
-		-o "${vcf_prefix}_normalised.vcf"
+		echo "No filtering was applied"
+		mv "${vcf_path}" "${vcf_prefix}_filtered.vcf"
+	fi
+
+	# Normalise variants, if applicable
+	# Normalisation is a default option for this app, should only be changed
+	# when running for non-SNV vcfs.
+
+    if $normalise;
+	then
+		bcftools norm -f genome.fa -m -any --keep-sum AD  "${vcf_prefix}_filtered.vcf" -o "${vcf_prefix}_post_filtering.vcf"
+
+	else
+		echo "No normalisation was applied"
+		mv "${vcf_prefix}_filtered.vcf" "${vcf_prefix}_post_filtering.vcf"
 	fi
 
 	# If hard filters are passed in the config apply them.
@@ -229,10 +240,10 @@ main() {
 	if test -z "$filter_command" || [ $filter_command == "null" ]
 	then
 		echo "No filtering commands passed."
-		mv "${vcf_prefix}_normalised.vcf" "${vcf_prefix}_temp.vcf"
+		mv "${vcf_prefix}_post_filtering.vcf" "${vcf_prefix}_temp.vcf"
 	else
 		echo "Filter commands passed: $filter_command"
-		eval $(echo ${filter_command} "${vcf_prefix}_normalised.vcf" -o "${vcf_prefix}_temp.vcf")
+		eval $(echo ${filter_command} "${vcf_prefix}_post_filtering.vcf" -o "${vcf_prefix}_temp.vcf")
 	fi
 
 	mark-section "annotating"
@@ -269,7 +280,6 @@ main() {
 
 	# Filter vcf by chosen transcript(s)
 	output_vcf="${vcf_prefix}_annotated.vcf"
-
 
 	if [ "$panel_bed" ];
 	then

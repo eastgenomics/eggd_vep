@@ -7,10 +7,10 @@ Annotates a vcf using [Variant Effect Predictor](https://github.com/Ensembl/ense
 ## What are typical use cases for this app?
 This app was designed to annotate vcfs with specified fields based on provided annotation.
 
-A variable level of annotation can be achieved by different combinations of custom annotation , vep plugins in addition to the required VEP cache annotation bundle.
+A variable level of annotation can be achieved by different combinations of custom annotation and vep plugins, in addition to the required VEP cache annotation bundle.
 
 ## What data are required for this app to run?
-- An input vcf to annotate (`vcf`)
+- An input vcf to be annotated (`vcf`)
 - Annotation configuration file (`config_file`):
     - json file providing information about annotations and plugins.
     - Example config file:
@@ -76,19 +76,21 @@ A variable level of annotation can be achieved by different combinations of cust
 
 
 ## What are the optional inputs for this app?
-- Amount of variants VEP will annotate per core(`buffer_size`) [default = 500] : to allow for parallelisation the app recognised the instance type and splits annotation in the amount of available cores.
+- Amount of variants VEP will annotate per core(`buffer_size`) [default = 500] : to allow for parallelisation the app recognises the instance type and splits annotation in the amount of available cores.
 - A panel bed file to filter the vcf on (`panel_bed`)
 - A list of transcripts to filter on (`transcript_list`). One transcript per line. VEP annotates with all possible transcripts and if this list is passed it filters on the given transcript list.
+- A boolean flag of whether to normalise the input vcf or not (`normalise`) [ default=true ].
 
-__This app uses the follow tools which are app assets:__
+__This app uses the following tools which are app assets:__
 * htslib (v1.14)
 * bedtools (v2.30.0)
 
 
 
-> For larger vcfs please consider about the appropriate instance type and buffer size to use.
+> For larger vcfs please consider the appropriate instance type and buffer size to use.
 ## What does this app output?
-- Annotated (and filtered if requested) vcf.
+- Annotated (and if requested, filtered) vcf.
 
 ## Notes
-- This app uses a buffer_size of 500 variants and parallelised the maximum number of cores available.As a default this app runs using mem1_ssd1_v2_x16 which translates to 16 cores. This was chosen to speed up set up.
+- This app uses a buffer_size of 500 variants and parallelised the maximum number of cores available. As a default, this app runs using mem1_ssd1_v2_x16 which translates to 16 cores. This was chosen to speed up set up.
+- The default behaviour of this app is to normalise the input vcf as all default annotation used is also normalised to be able to appropriately compare and annotate the vcf. The `normalise` option was built to ensure compatibility with copy-number vcfs which do not require normalisation.
