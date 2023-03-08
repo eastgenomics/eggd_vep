@@ -278,17 +278,11 @@ main() {
 	then
 		echo "Docker version ${VEP_IMAGE_VERSION} greater than or equal to 109";
 		DOCKER_FOLDER='/data'
-		VEP_EXEC='vep'
-		FILTER_VEP_EXEC='filter_vep'
 	else
 		echo "Docker version ${VEP_IMAGE_VERSION} less than 109";
 		DOCKER_FOLDER='/opt/vep/.vep'
-		VEP_EXEC='./vep'
-		FILTER_VEP_EXEC='./filter_vep'
 	fi
 	echo "$DOCKER_FOLDER"
-	echo "$VEP_EXEC"
-	echo "$FILTER_VEP_EXEC"
 
 	# Create annotation and plugin strings
 	_format_annotation "$config_file_path"
