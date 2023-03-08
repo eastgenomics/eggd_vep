@@ -27,35 +27,19 @@ _annotate_vep_vcf () {
 	echo "Number of forks: $FORKS"
 	echo "Buffer size used: $buffer_size"
 
-	# check docker version, if >=109 then use updated working directory /data
-	# otherwise use original working directory
 	# --exclude_null_allelels is used with --check-existing to prevent multiple COSMIC id's
 	# being added to the same variant.
 	# the buffer size is chosen based on the average size of the input VCF
-	if [[ "$VEP_IMAGE_VERSION" -ge 109 ]];
-	then
-		echo "VEP: Docker version ${VEP_IMAGE_VERSION} greater than or equal to 109";
-		/usr/bin/time -v docker run -v /home/dnanexus:/data \
-		${VEP_IMAGE_ID} \
-		vep -i /data/"${input_vcf}" -o /data/"${output_vcf}" \
-		--vcf --cache --refseq --exclude_predicted --symbol --hgvs --hgvsg \
-		--check_existing --variant_class --numbers --format vcf \
-		--offline --exclude_null_alleles --assembly "$assembly_string" \
-		$ANNOTATION_STRING $PLUGIN_STRING --fields "$fields" \
-		--buffer_size "$buffer_size" --fork "$FORKS" \
-		--no_stats --compress_output bgzip --shift_3prime 1
-	else
-		echo "VEP: Docker version ${VEP_IMAGE_VERSION} less than 109";
-		/usr/bin/time -v docker run -v /home/dnanexus:/opt/vep/.vep \
-		${VEP_IMAGE_ID} \
-		./vep -i /opt/vep/.vep/"${input_vcf}" -o /opt/vep/.vep/"${output_vcf}" \
-		--vcf --cache --refseq --exclude_predicted --symbol --hgvs --hgvsg \
-		--check_existing --variant_class --numbers --format vcf \
-		--offline --exclude_null_alleles --assembly "$assembly_string" \
-		$ANNOTATION_STRING $PLUGIN_STRING --fields "$fields" \
-		--buffer_size "$buffer_size" --fork "$FORKS" \
-		--no_stats --compress_output bgzip --shift_3prime 1
-	fi
+	# use correct folders and vep exec name based on if Docker v109 or above
+	/usr/bin/time -v docker run -v /home/dnanexus:${DOCKER_FOLDER} \
+	${VEP_IMAGE_ID} \
+	${VEP_EXEC} -i ${DOCKER_FOLDER}/"${input_vcf}" -o ${DOCKER_FOLDER}/"${output_vcf}" \
+	--vcf --cache --refseq --exclude_predicted --symbol --hgvs --hgvsg \
+	--check_existing --variant_class --numbers --format vcf \
+	--offline --exclude_null_alleles --assembly "$assembly_string" \
+	$ANNOTATION_STRING $PLUGIN_STRING --fields "$fields" \
+	--buffer_size "$buffer_size" --fork "$FORKS" \
+	--no_stats --compress_output bgzip --shift_3prime 1
 }
 
 _filter_vep_vcf () {
@@ -82,25 +66,13 @@ _filter_vep_vcf () {
 	# Reset set
 	set -x
 
-	# check docker version, if >=109 then use updated working directory /data
-	# otherwise use original working directory
 	# Run vep_filter, "${transcript_list%????}" removes the last 4 characters which are not used
-	if [[ "$VEP_IMAGE_VERSION" -ge 109 ]];
-	then
-		echo "VEP filter: Docker version ${VEP_IMAGE_VERSION} greater than or equal to 109";
-		/usr/bin/time -v docker run -v /home/dnanexus:/data \
-		${VEP_IMAGE_ID}  \
-		filter_vep -i /data/"$input_vcf" \
-		-o /data/"$output_vcf" --only_matched --filter \
-		"${transcript_list%????}"
-	else
-		echo "VEP filter: Docker version ${VEP_IMAGE_VERSION} less than 109";
-		/usr/bin/time -v docker run -v /home/dnanexus:/opt/vep/.vep \
-		${VEP_IMAGE_ID}  \
-		./filter_vep -i /opt/vep/.vep/"$input_vcf" \
-		-o /opt/vep/.vep/"$output_vcf" --only_matched --filter \
-		"${transcript_list%????}"
-	fi
+	# use the correct folder structure and filter_vep command based on Docker version
+	/usr/bin/time -v docker run -v /home/dnanexus:${DOCKER_FOLDER} \
+	${VEP_IMAGE_ID}  \
+	${FILTER_VEP_EXEC} -i ${DOCKER_FOLDER}/"$input_vcf" \
+	-o ${DOCKER_FOLDER}/"$output_vcf" --only_matched --filter \
+	"${transcript_list%????}"
 }
 
 _format_annotation () {
@@ -119,7 +91,7 @@ _format_annotation () {
         # Get the file name using the file id and add to the command list
         dx_file_id=$(jq -r '.resource_files[0].file_id' <<< "$annotation")
         dx_name=$(dx describe "$dx_file_id" --json | jq -r '.name')
-        ANNOTATION_STRING+="/opt/vep/.vep/${dx_name},"
+        ANNOTATION_STRING+="${DOCKER_FOLDER}/${dx_name},"
 
         # Adds required vep arguments
         ANNOTATION_STRING+=$(jq -j  '[
@@ -155,7 +127,7 @@ _format_plugins () {
             # Add it the command list
             dx_file_id=$(jq -r '.file_id' <<< "$plugin_file")
             dx_name=$(dx describe "$dx_file_id" --json | jq -r '.name')
-            PLUGIN_STRING+="${prefix}/opt/vep/.vep/${dx_name},"
+            PLUGIN_STRING+="${prefix}${DOCKER_FOLDER}/${dx_name},"
         done
 
         # Check if there's additional options to append
@@ -299,6 +271,24 @@ main() {
 	VEP_IMAGE_ID=$(docker images --format="{{.Repository}} {{.ID}}" | grep "^ensemblorg" | cut -d' ' -f2)
 	# Get release version of the loaded docker as int e.g. 109
 	VEP_IMAGE_VERSION=$(docker images --format="{{.Repository}} {{.Tag}}" | grep "^ensemblorg" | cut -d '_' -f2 | cut -d '.' -f1)
+
+	# If VEP Docker image is 109 or above, change Docker folder, name of vep
+	# executable and name of filter_vep exectuable
+	if [[ "$VEP_IMAGE_VERSION" -ge 109 ]];
+	then
+		echo "Docker version ${VEP_IMAGE_VERSION} greater than or equal to 109";
+		DOCKER_FOLDER='/data'
+		VEP_EXEC='vep'
+		FILTER_VEP_EXEC='filter_vep'
+	else
+		echo "Docker version ${VEP_IMAGE_VERSION} less than 109";
+		DOCKER_FOLDER='/opt/vep/.vep'
+		VEP_EXEC='./vep'
+		FILTER_VEP_EXEC='./filter_vep'
+	fi
+	echo "$DOCKER_FOLDER"
+	echo "$VEP_EXEC"
+	echo "$FILTER_VEP_EXEC"
 
 	# Create annotation and plugin strings
 	_format_annotation "$config_file_path"
