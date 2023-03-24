@@ -37,7 +37,7 @@ _annotate_vep_vcf () {
 	--vcf --cache --refseq --exclude_predicted --symbol --hgvs --hgvsg \
 	--check_existing --variant_class --numbers --format vcf \
 	--offline --exclude_null_alleles --assembly "$assembly_string" \
-	$ANNOTATION_STRING $PLUGIN_STRING --fields "$fields" \
+	$ANNOTATION_STRING $PLUGIN_STRING $ADDITIONAL_FLAGS --fields "$fields" \
 	--buffer_size "$buffer_size" --fork "$FORKS" \
 	--no_stats --compress_output bgzip --shift_3prime 1
 }
@@ -139,6 +139,22 @@ _format_plugins () {
         fi
 
     done
+}
+
+_format_additional_flags () {
+	# Extracts additional flags from "additional_flags" section of the config file
+
+	# Inputs
+	# $1 -> input config file
+	local file=$1
+	
+	ADDITIONAL_FLAGS=""
+
+	for flag in $(jq -c '.additional_flags[]' "$file")
+	do 	flag="${flag%\"}"
+    	flag="${flag#\"}"
+    	ADDITIONAL_FLAGS+="--$flag ";
+	done
 }
 
 
@@ -269,9 +285,10 @@ main() {
 	# Get image id of the loaded docker
 	VEP_IMAGE_ID=$(docker images --format="{{.Repository}} {{.ID}}" | grep "^ensemblorg" | cut -d' ' -f2)
 
-	# Create annotation and plugin strings
+	# Create annotation and plugin strings and additional flags
 	_format_annotation "$config_file_path"
 	_format_plugins "$config_file_path"
+	_format_additional_flags "$config_file_path"
 
 	# Annotate
 	annotated_vcf="${vcf_prefix}_temp_annotated.vcf.gz"
