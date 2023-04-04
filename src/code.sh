@@ -150,10 +150,9 @@ _format_additional_flags () {
 	
 	ADDITIONAL_FLAGS=""
 
-	for flag in $(jq -c '.additional_flags[]' "$file")
-	do 	flag="${flag%\"}"
-    	flag="${flag#\"}"
-    	ADDITIONAL_FLAGS+="--$flag ";
+	for flag in $(jq -r -c '.additional_flags[]' "$file")
+	do
+		ADDITIONAL_FLAGS+="--$flag ";
 	done
 }
 
