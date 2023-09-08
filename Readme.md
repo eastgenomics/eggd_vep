@@ -2,7 +2,7 @@
 
 ## What does this app do?
 
-Annotates a vcf using [Variant Effect Predictor](https://github.com/Ensembl/ensembl-vep). Default docker image used v109.3.
+Annotates a vcf using [Variant Effect Predictor](https://github.com/Ensembl/ensembl-vep). Default docker image used v110.1.
 
 ## What are typical use cases for this app?
 This app was designed to annotate vcfs with specified fields based on provided annotation.
