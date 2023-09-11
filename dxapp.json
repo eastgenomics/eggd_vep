@@ -3,11 +3,11 @@
   "title": "eggd_vep",
   "summary": "Annotates and filters VCF files",
   "properties": {
-    "githubRelease": "1.1.0"
+    "githubRelease": "1.3.0"
   },
   "dxapi": "1.0.0",
   "openSource": true,
-  "version": "1.1.0",
+  "version": "1.3.0",
   "inputSpec": [
     {
       "name": "vcf",
@@ -116,13 +116,13 @@
       {
         "name": "VEP",
         "repoUrl": "https://github.com/Ensembl/ensembl-vep",
-        "version": "130.1",
+        "version": "110.1",
         "license": "Apache License 2.0",
-        "licenseUrl": "https://github.com/Ensembl/ensembl-vep/blob/release/103/LICENSE",
+        "licenseUrl": "https://github.com/Ensembl/ensembl-vep/blob/release/110.1/LICENSE",
         "author": "EMBL-EBI"
       }
     ],
-    "whatsNew": "* 1.1.0 Makes normalisation option & minor typo fixes \n"
+    "whatsNew": "* 1.3.0 Works with new VEP Docker v110 that includes plug ins \n* 1.2.0 Allows for docker run command changes in VEP Docker v109 and above \n* 1.1.0 Makes normalisation option & minor typo fixes \n"
   },
   "categories": [],
   "access": {

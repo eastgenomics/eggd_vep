@@ -2,7 +2,7 @@
 
 ## What does this app do?
 
-Annotates a vcf using [Variant Effect Predictor](https://github.com/Ensembl/ensembl-vep). Default docker image used v105.0.
+Annotates a vcf using [Variant Effect Predictor](https://github.com/Ensembl/ensembl-vep). Default docker image used v110.1.
 
 ## What are typical use cases for this app?
 This app was designed to annotate vcfs with specified fields based on provided annotation.
@@ -94,3 +94,4 @@ __This app uses the following tools which are app assets:__
 ## Notes
 - This app uses a buffer_size of 500 variants and parallelised the maximum number of cores available. As a default, this app runs using mem1_ssd1_v2_x16 which translates to 16 cores. This was chosen to speed up set up.
 - The default behaviour of this app is to normalise the input vcf as all default annotation used is also normalised to be able to appropriately compare and annotate the vcf. The `normalise` option was built to ensure compatibility with copy-number vcfs which do not require normalisation.
+- If there are additional flags, the `additional_flags` section in the config file should contain the flag name and the `additional_fields` section in the config file should contain the output field name for that flag. Example flags and output fields are linked [here](https://www.ensembl.org/info/docs/tools/vep/script/vep_options.html)

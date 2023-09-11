@@ -30,14 +30,14 @@ _annotate_vep_vcf () {
 	# --exclude_null_allelels is used with --check-existing to prevent multiple COSMIC id's
 	# being added to the same variant.
 	# the buffer size is chosen based on the average size of the input VCF
-
-	/usr/bin/time -v docker run -v /home/dnanexus:/opt/vep/.vep \
+	/usr/bin/time -v docker run -v /home/dnanexus:/data -w /data \
 	${VEP_IMAGE_ID} \
-	./vep -i /opt/vep/.vep/"${input_vcf}" -o /opt/vep/.vep/"${output_vcf}" \
+	vep -i /data/"${input_vcf}" -o /data/"${output_vcf}" \
+	--dir /data \
 	--vcf --cache --refseq --exclude_predicted --symbol --hgvs --hgvsg \
 	--check_existing --variant_class --numbers --format vcf \
 	--offline --exclude_null_alleles --assembly "$assembly_string" \
-	$ANNOTATION_STRING $PLUGIN_STRING --fields "$fields" \
+	$ANNOTATION_STRING $PLUGIN_STRING $ADDITIONAL_FLAGS --fields "$fields" \
 	--buffer_size "$buffer_size" --fork "$FORKS" \
 	--no_stats --compress_output bgzip --shift_3prime 1
 }
@@ -67,10 +67,11 @@ _filter_vep_vcf () {
 	set -x
 
 	# Run vep_filter, "${transcript_list%????}" removes the last 4 characters which are not used
-	/usr/bin/time -v docker run -v /home/dnanexus:/opt/vep/.vep \
+	# use the correct folder structure and filter_vep command based on Docker version
+	/usr/bin/time -v docker run -v /home/dnanexus:/data -w /data \
 	${VEP_IMAGE_ID}  \
-	./filter_vep -i /opt/vep/.vep/"$input_vcf" \
-	-o /opt/vep/.vep/"$output_vcf" --only_matched --filter \
+	filter_vep -i /data/"$input_vcf" \
+	-o /data/"$output_vcf" --only_matched --filter \
 	"${transcript_list%????}"
 }
 
@@ -90,7 +91,7 @@ _format_annotation () {
         # Get the file name using the file id and add to the command list
         dx_file_id=$(jq -r '.resource_files[0].file_id' <<< "$annotation")
         dx_name=$(dx describe "$dx_file_id" --json | jq -r '.name')
-        ANNOTATION_STRING+="/opt/vep/.vep/${dx_name},"
+        ANNOTATION_STRING+="/data/${dx_name},"
 
         # Adds required vep arguments
         ANNOTATION_STRING+=$(jq -j  '[
@@ -126,7 +127,7 @@ _format_plugins () {
             # Add it the command list
             dx_file_id=$(jq -r '.file_id' <<< "$plugin_file")
             dx_name=$(dx describe "$dx_file_id" --json | jq -r '.name')
-            PLUGIN_STRING+="${prefix}/opt/vep/.vep/${dx_name},"
+            PLUGIN_STRING+="${prefix}/data/${dx_name},"
         done
 
         # Check if there's additional options to append
@@ -139,6 +140,21 @@ _format_plugins () {
         fi
 
     done
+}
+
+_format_additional_flags () {
+	# Extracts additional flags from "additional_flags" section of the config file
+
+	# Inputs
+	# $1 -> input config file
+	local file=$1
+	
+	ADDITIONAL_FLAGS=""
+
+	for flag in $(jq -r -c '.additional_flags[]' "$file")
+	do
+		ADDITIONAL_FLAGS+="--$flag ";
+	done
 }
 
 
@@ -269,9 +285,10 @@ main() {
 	# Get image id of the loaded docker
 	VEP_IMAGE_ID=$(docker images --format="{{.Repository}} {{.ID}}" | grep "^ensemblorg" | cut -d' ' -f2)
 
-	# Create annotation and plugin strings
+	# Create annotation and plugin strings and additional flags
 	_format_annotation "$config_file_path"
 	_format_plugins "$config_file_path"
+	_format_additional_flags "$config_file_path"
 
 	# Annotate
 	annotated_vcf="${vcf_prefix}_temp_annotated.vcf.gz"
